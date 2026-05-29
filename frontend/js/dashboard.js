@@ -168,12 +168,27 @@
         }, i * 45);   /* 45 ms stagger between cards */
       });
 
-      /* ---- Step 5: populate trending strip from already-fetched data ----
-       * No extra API call needed — flatten all tools and filter for rising. */
-      var allTools = Object.values(toolsByCategory).reduce(function (acc, arr) {
-        return acc.concat(arr);
-      }, []);
-      renderTrendingStrip(allTools);
+      /* ---- Step 5: populate trending strip ----
+       * Primary source: GET /api/trends/rising (Phase 6 Flask intelligence engine).
+       * Calling API.getTrendingRising() never throws — it returns null when Flask
+       * is unavailable so we can fall back cleanly to the category data we already
+       * fetched.  Both sources produce objects with the same fields (slug, name,
+       * trend_score, trend_direction) so renderTrendingStrip() handles both. */
+      var risingFromFlask = await API.getTrendingRising(6);
+
+      if (risingFromFlask && risingFromFlask.length > 0) {
+        /* Flask returned real trend data — use it directly.
+         * renderTrendingStrip will still filter for trend_direction==='rising'
+         * and sort by trend_score, which is harmless since Flask already did both. */
+        renderTrendingStrip(risingFromFlask);
+      } else {
+        /* Flask is not running yet (Phase 6 optional), or returned no results.
+         * Fall back to deriving rising tools from the already-loaded category data. */
+        var allTools = Object.values(toolsByCategory).reduce(function (acc, arr) {
+          return acc.concat(arr);
+        }, []);
+        renderTrendingStrip(allTools);
+      }
 
     } catch (err) {
       console.error('[dashboard] Failed to load dashboard:', err.message);
@@ -332,9 +347,14 @@
 
   /* ============================================================
      TRENDING NOW STRIP
-     Derives trending tools from the already-fetched category data
-     to avoid a redundant API call. When Phase 6 adds /api/trends/rising,
-     this can be upgraded to use API.getTrendingRising() instead.
+     Renders the horizontal "Trending Now" bar at the bottom of the dashboard.
+
+     Accepts either:
+       a) Rising tools from Flask (/api/trends/rising) — pre-sorted by trend_score
+       b) All category tools (fallback) — will be filtered and sorted here
+
+     Both sources have the same shape: {slug, name, trend_score, trend_direction}
+     so the render logic is identical in both cases.
      ============================================================ */
 
   function renderTrendingStrip(allTools) {

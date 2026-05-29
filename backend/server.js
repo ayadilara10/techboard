@@ -23,12 +23,14 @@ const express = require('express');
 // Internal modules
 const pool           = require('./config/database');
 const corsMiddleware = require('./middleware/cors');
+const flask          = require('./utils/flaskClient');
 
 // Route handlers — each file exports an Express Router
 const categoriesRouter  = require('./routes/categories');
 const toolsRouter       = require('./routes/tools');
 const industriesRouter  = require('./routes/industries');
 const statsRouter       = require('./routes/stats');
+const trendsRouter      = require('./routes/trends');
 const xmlRouter         = require('./routes/xml');
 
 // ---- Application setup ----
@@ -53,6 +55,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/tools',      toolsRouter);
 app.use('/api/industries', industriesRouter);
 app.use('/api/stats',      statsRouter);
+app.use('/api/trends',     trendsRouter);
 
 // XML routes are mounted at root so they can serve both /feed.xml and /api/export/xml
 app.use('/', xmlRouter);
@@ -103,10 +106,21 @@ async function start() {
     console.log('✓ MySQL connected');
     conn.release();   // return the connection to the pool immediately
 
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
       console.log(`✓ TechBoard API listening on port ${PORT}`);
       console.log(`  Environment : ${process.env.NODE_ENV || 'development'}`);
       console.log(`  Health check: http://localhost:${PORT}/health`);
+
+      // Non-blocking Flask connectivity check — a warning here does not prevent
+      // the API from serving requests; trend endpoints will return 503 until Flask
+      // is started separately (or via docker-compose).
+      const flaskAlive = await flask.ping();
+      if (flaskAlive) {
+        console.log(`✓ Flask intelligence engine reachable at ${process.env.FLASK_URL || 'http://localhost:5001'}`);
+      } else {
+        console.warn(`⚠  Flask intelligence engine not reachable. Trend endpoints will return 503.`);
+        console.warn(`   Start it with: cd intelligence && python app.py`);
+      }
     });
 
   } catch (err) {

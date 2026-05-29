@@ -1,0 +1,30 @@
+# intelligence/requirements.txt — Python dependencies for the Flask intelligence engine
+#
+# Install with:  pip install -r requirements.txt
+# Docker:        the Dockerfile runs this automatically via pip install -r requirements.txt
+#
+# Pin major versions to avoid accidental breaking changes while still allowing
+# security patch updates (minor/patch versions float freely within the pinned major).
+
+# Web framework — Flask 3.x with the Werkzeug 3.x WSGI layer
+flask==3.0.3
+
+# Cross-Origin Resource Sharing — allows the Node.js backend and the browser
+# to call this service from a different origin during local development
+flask-cors==4.0.1
+
+# MySQL driver — mysql-connector-python is the official Oracle connector;
+# it supports parameterised queries and dictionary cursors out of the box
+mysql-connector-python==8.4.0
+
+# Environment variable loading — reads .env files so the service shares
+# the same credentials as the Node.js backend without hardcoding anything
+python-dotenv==1.0.1
+
+# Numerical computing — used by trend_detector.py for linear regression (polyfit)
+# and by stats_engine.py for mean / standard-deviation calculations
+numpy==1.26.4
+
+# Statistical functions — used by compare.py for confidence intervals
+# and percentile ranking across tool populations
+scipy==1.13.1
