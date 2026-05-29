@@ -1,0 +1,379 @@
+/* ============================================================
+   dashboard.css — Layout for index.html (main dashboard page)
+   Contains: header, hero, stats ticker, categories grid,
+             trending strip, footer, and all responsive rules.
+   ============================================================ */
+
+/* ============================================================
+   SITE HEADER
+   ============================================================ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-modal);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Semi-transparent so content beneath the sticky header is hinted */
+  background-color: rgba(15, 40, 64, 0.92);
+}
+
+[data-theme="light"] .site-header {
+  background-color: rgba(235, 240, 248, 0.92);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+/* ---- Logo ---- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 28px;
+  width: auto;
+}
+
+/* Fallback text logo shown if SVG fails to load */
+.logo-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.logo-text .accent { color: var(--accent-primary); }
+
+/* ---- Navigation ---- */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+/* Admin link gets a subtle highlight */
+.nav-link--admin {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.nav-link--admin:hover {
+  color: var(--accent-secondary);
+}
+
+/* ---- Theme Toggle Button ---- */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition);
+  font-size: 1rem;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-card);
+  border-color: var(--accent-primary);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+
+.hero {
+  padding: var(--space-2xl) 0 var(--space-xl);
+  background: linear-gradient(
+    160deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 60%,
+    var(--bg-primary) 100%
+  );
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle decorative grid overlay */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.hero .container { position: relative; z-index: 1; }
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+.hero-accent {
+  color: var(--accent-primary);
+}
+
+.hero-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--text-muted);
+  max-width: 560px;
+  margin-bottom: var(--space-xl);
+}
+
+/* ============================================================
+   STATS TICKER — hero data points
+   ============================================================ */
+
+.stats-ticker {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  row-gap: var(--space-lg);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-xl);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-xl);
+}
+
+.stat-item:first-child { padding-left: 0; }
+.stat-item:last-child  { padding-right: 0; }
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--accent-primary);
+  line-height: 1;
+  min-width: 60px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background-color: var(--border-color);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   CATEGORIES SECTION
+   ============================================================ */
+
+.categories-section {
+  padding: var(--space-2xl) 0;
+}
+
+/* Responsive grid: auto-fill columns, min 280px each */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* ============================================================
+   TRENDING SECTION
+   ============================================================ */
+
+.trending-section {
+  padding: var(--space-xl) 0 var(--space-2xl);
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Horizontally scrollable strip of trending chips */
+.trending-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);  /* room for scrollbar without layout shift */
+  /* Hide scrollbar visually but keep it functional */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.trending-strip::-webkit-scrollbar {
+  height: 4px;
+}
+
+/* ============================================================
+   SITE FOOTER
+   ============================================================ */
+
+.site-footer {
+  padding: var(--space-xl) 0;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.footer-credits {
+  max-width: 560px;
+}
+
+.footer-credits p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.footer-link {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footer-link:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Tablet — 768px and below */
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--space-xl) 0;
+  }
+
+  .stats-ticker {
+    padding: var(--space-md);
+    gap: 0;
+  }
+
+  .stat-item {
+    padding: 0 var(--space-md);
+  }
+
+  .stat-divider {
+    height: 28px;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .header-nav {
+    gap: var(--space-md);
+  }
+
+  .nav-link--admin {
+    display: none;   /* hide admin link on small screens to save space */
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .footer-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+}
+
+/* Mobile — 480px and below */
+@media (max-width: 480px) {
+  .container {
+    padding-inline: var(--space-md);
+  }
+
+  .stats-ticker {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .stat-divider {
+    display: none;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+}

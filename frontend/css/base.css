@@ -1,0 +1,239 @@
+/* ============================================================
+   base.css — Reset, Typography & Global Element Styles
+   All values reference CSS custom properties from variables.css.
+   No hardcoded colours or sizes — change variables.css instead.
+   ============================================================ */
+
+/* ---- BOX-MODEL RESET ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- DOCUMENT ---- */
+html {
+  /* Smooth scrolling for anchor links */
+  scroll-behavior: smooth;
+  /* Prevents layout shift when a vertical scrollbar appears */
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  /* Theme transitions — bg and text fade smoothly on toggle */
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- HEADINGS ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+h1 { font-size: clamp(1.8rem, 4vw, 2.75rem); }
+h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
+h3 { font-size: clamp(1.1rem, 2vw, 1.35rem); }
+h4 { font-size: 1.1rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.9rem; }
+
+/* ---- BODY TEXT ---- */
+p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- LINKS ---- */
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition), opacity var(--transition);
+}
+
+a:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- INLINE CODE ---- */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: var(--bg-surface);
+  color: var(--accent-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+/* ---- BLOCK CODE ---- */
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ---- IMAGES ---- */
+img, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---- LISTS ---- */
+ul, ol {
+  padding-left: var(--space-lg);
+}
+
+li {
+  margin-bottom: var(--space-xs);
+  color: var(--text-secondary);
+}
+
+/* ---- HORIZONTAL RULE ---- */
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: var(--space-xl) 0;
+}
+
+/* ---- TABLES ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---- FORM ELEMENTS (shared base; page-specific overrides in component files) ---- */
+input,
+textarea,
+select {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ---- BUTTONS (base reset; full styles in components.css) ---- */
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+/* ---- SCROLLBAR STYLING (Webkit browsers) ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ---- SELECTION ---- */
+::selection {
+  background-color: rgba(45, 212, 212, 0.25);
+  color: var(--text-primary);
+}
+
+/* ---- LAYOUT UTILITY ---- */
+
+/* Centred, max-width wrapper used on every section */
+.container {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--space-lg);
+}
+
+/* Screen-reader-only text — visually hidden but accessible to assistive tech */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Flex helpers used throughout the UI */
+.flex        { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between{ display: flex; align-items: center; justify-content: space-between; }
+.gap-sm      { gap: var(--space-sm); }
+.gap-md      { gap: var(--space-md); }

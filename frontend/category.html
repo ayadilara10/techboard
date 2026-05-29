@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<!--
+  category.html — TechBoard Category Detail Page
+  Reads ?slug= from the URL to determine which category to display.
+  All content below the static shell is populated by category.js.
+  Semantic HTML5: <header>, <main>, <section>, <article>, <footer>
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Description and title are overwritten by category.js once data loads -->
+  <meta name="description" content="TechBoard — Technology category detail. Usage rankings, trends, and industry breakdowns.">
+  <title>Category — TechBoard</title>
+
+  <!-- Google Fonts: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS — loaded in dependency order -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/category.css">
+
+  <!--
+    API URL configuration — must match index.html.
+    Development (no Docker): 'http://localhost:3000'
+    Docker / nginx proxy:    '' (empty string)
+  -->
+  <script>
+    window.TECHBOARD_API_URL = 'http://localhost:3000';
+  </script>
+
+  <!-- theme.js in <head> to apply saved theme before first paint -->
+  <script src="js/theme.js"></script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       SITE HEADER — identical to index.html
+       ============================================================ -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+
+      <a href="index.html" class="logo" aria-label="TechBoard — home">
+        <img src="assets/logo.svg"
+             alt="TechBoard"
+             class="logo-img"
+             width="148" height="32"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <span class="logo-text" style="display:none">
+          Tech<span class="accent">Board</span>
+        </span>
+      </a>
+
+      <nav class="header-nav" aria-label="Primary navigation">
+        <a href="stack-builder.html" class="nav-link">Stack Builder</a>
+        <a href="admin/login.html"   class="nav-link nav-link--admin">Admin</a>
+        <button class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode">
+          <span id="themeToggleIcon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main id="main-content" role="main">
+
+    <!-- ---- PAGE HERO: category name, description, compare button ---- -->
+    <section class="page-hero" aria-labelledby="categoryName">
+      <div class="container">
+
+        <!-- Breadcrumb navigation -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html" class="breadcrumb-link">← Dashboard</a>
+        </nav>
+
+        <div class="page-hero-content">
+          <div class="page-hero-text">
+            <!--
+              categoryName and categoryDescription are empty on load.
+              category.js populates them after fetching the category object.
+            -->
+            <h1 class="page-hero-title page-hero-title--loading" id="categoryName">
+              Loading…
+            </h1>
+            <p class="page-hero-description" id="categoryDescription"></p>
+
+            <!-- Status badge + tier badge — filled by category.js -->
+            <div class="page-hero-meta">
+              <span id="categoryBadge"></span>
+            </div>
+          </div>
+
+          <!--
+            Compare button — category.js disables this and adds a lock icon
+            when USER_TIER is 'free'.
+          -->
+          <button class="btn btn--secondary compare-open-btn"
+                  id="compareOpenBtn"
+                  type="button"
+                  aria-haspopup="dialog">
+            ⇄ Compare Tools
+          </button>
+        </div>
+
+      </div>
+    </section><!-- /.page-hero -->
+
+    <!-- ---- FILTERS BAR: industry chips + year selector ---- -->
+    <!--
+      This bar is position:sticky so it stays visible while the user
+      scrolls through the long tool list.
+    -->
+    <div class="filters-bar" role="search" aria-label="Filter tools">
+      <div class="container filters-inner">
+
+        <!-- Industry filter chips — "All" is static; the rest are injected by category.js -->
+        <div class="filter-group">
+          <span class="filter-label" id="industry-filter-label">Industry:</span>
+          <div class="industry-filter"
+               id="industryFilter"
+               role="group"
+               aria-labelledby="industry-filter-label">
+            <!--
+              Chips are rendered by renderIndustryChips() in category.js.
+              The "All Industries" chip is injected first, then one chip per industry.
+              In free tier, all chips except "All" get class is-locked.
+            -->
+          </div>
+        </div>
+
+        <!-- Year selector — locked to latest year in free tier -->
+        <div class="filter-group filter-group--year">
+          <label for="yearSelector" class="filter-label">Year:</label>
+          <select class="year-select" id="yearSelector" aria-label="Select data year">
+            <!-- Options injected by renderYearSelector() in category.js -->
+          </select>
+        </div>
+
+      </div>
+    </div><!-- /.filters-bar -->
+
+    <!-- ---- MAIN TWO-COLUMN CONTENT AREA ---- -->
+    <div class="category-content">
+      <div class="container">
+        <div class="content-grid">
+
+          <!-- ==============================
+               LEFT COLUMN — Ranked Tool List
+               ============================== -->
+          <section class="tools-column" aria-labelledby="tools-col-heading">
+
+            <header class="column-header">
+              <h2 class="column-title" id="tools-col-heading">All Tools</h2>
+              <!--
+                Tool count updated by category.js after each fetch.
+                Example: "12 tools"
+              -->
+              <span class="column-meta" id="toolCount" aria-live="polite"></span>
+            </header>
+
+            <!--
+              #toolListContainer is the injection point for tool rows.
+
+              Free tier layout (injected by renderToolList):
+                <div class="tool-row"> × 3     ← visible rows
+                <div class="premium-gate-wrapper">
+                  <div class="premium-gated-content">
+                    <div class="tool-row"> × N   ← blurred rows
+                  </div>
+                  <div class="premium-overlay">…</div>
+                </div>
+
+              Premium tier: all rows rendered without the gate wrapper.
+            -->
+            <div id="toolListContainer"
+                 aria-live="polite"
+                 aria-label="Ranked tool list">
+              <!-- Populated by category.js -->
+            </div>
+
+          </section><!-- /.tools-column -->
+
+          <!-- ==============================
+               RIGHT COLUMN — Chart + Legend
+               ============================== -->
+          <section class="chart-column" aria-labelledby="chart-col-heading">
+
+            <header class="column-header">
+              <h2 class="column-title" id="chart-col-heading">Usage Over Time</h2>
+              <span class="column-meta">Top 5 tools · 2022–2024</span>
+            </header>
+
+            <!--
+              Chart legend — filled by TBCharts.buildLegend() (charts.js).
+              Positioned above the canvas for visual hierarchy.
+            -->
+            <div class="chart-legend" id="chartLegend" aria-hidden="true"></div>
+
+            <!--
+              #chartWrapper is the premium-gate-wrapper target in free tier.
+              category.js adds class="premium-gate-wrapper" and appends
+              a .premium-overlay div over the canvas.
+            -->
+            <div class="chart-wrapper" id="chartWrapper">
+              <div class="chart-canvas-container">
+                <!--
+                  <canvas> element used by Chart.js.
+                  TBCharts.renderUsageChart('usageChart', …) targets this id.
+                  The loading spinner is injected inside chart-canvas-container
+                  by charts.js while data is being fetched.
+                -->
+                <canvas id="usageChart"
+                        role="img"
+                        aria-label="Usage percentage over time for top tools in this category">
+                </canvas>
+              </div>
+            </div><!-- /#chartWrapper -->
+
+          </section><!-- /.chart-column -->
+
+        </div><!-- /.content-grid -->
+      </div><!-- /.container -->
+    </div><!-- /.category-content -->
+
+  </main><!-- /#main-content -->
+
+  <!-- ============================================================
+       COMPARE MODAL
+       hidden attribute keeps it out of the layout until JS opens it.
+       category.js calls openModal() on the compare button click.
+       ============================================================ -->
+  <div class="modal-backdrop"
+       id="compareModal"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title"
+       hidden>
+    <div class="modal">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="modal-title">Compare Tools</h2>
+        <button class="modal-close"
+                id="modalClose"
+                type="button"
+                aria-label="Close comparison modal">✕</button>
+      </header>
+
+      <div class="modal-body">
+
+        <p class="modal-hint">
+          Select 2 or 3 tools to compare side by side.
+          Comparison uses the latest available data for the current industry filter.
+        </p>
+
+        <!--
+          #compareToolPicker — list of checkboxes, one per tool in the current view.
+          Populated by populateComparePicker() in category.js whenever allTools changes.
+        -->
+        <div class="compare-tool-picker"
+             id="compareToolPicker"
+             role="group"
+             aria-label="Select tools to compare">
+          <!-- Picker items injected by category.js -->
+        </div>
+
+        <!--
+          #compareResults — the comparison table.
+          Hidden by default; class "is-visible" added by renderCompareResults().
+        -->
+        <div class="compare-results" id="compareResults" aria-live="polite">
+          <!-- Comparison table injected by category.js -->
+        </div>
+
+      </div><!-- /.modal-body -->
+
+      <footer class="modal-footer">
+        <!--
+          "Compare Selected" — disabled until ≥2 tools are checked.
+          category.js enables it via $('#compareRunBtn').prop('disabled', false).
+        -->
+        <button class="btn btn--primary"
+                id="compareRunBtn"
+                type="button"
+                disabled
+                aria-disabled="true">
+          Compare Selected
+        </button>
+        <button class="btn btn--ghost"
+                id="compareCancelBtn"
+                type="button">
+          Cancel
+        </button>
+      </footer>
+
+    </div><!-- /.modal -->
+  </div><!-- /#compareModal -->
+
+  <!-- ============================================================
+       SITE FOOTER — identical to index.html
+       ============================================================ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-credits">
+        <p>
+          Data sourced from
+          <a href="https://survey.stackoverflow.co/2024/" target="_blank" rel="noopener noreferrer">Stack Overflow Survey 2024</a>,
+          <a href="https://stateofjs.com" target="_blank" rel="noopener noreferrer">State of JS 2024</a>, and
+          <a href="https://www.jetbrains.com/lp/devecosystem-2024/" target="_blank" rel="noopener noreferrer">JetBrains Developer Ecosystem 2024</a>.
+        </p>
+      </div>
+      <nav class="footer-links" aria-label="Utility links">
+        <a href="/feed.xml"          class="footer-link">RSS Feed</a>
+        <a href="/api/export/xml"    class="footer-link">XML Export</a>
+        <a href="stack-builder.html" class="footer-link">Stack Builder</a>
+        <a href="index.html"         class="footer-link">Dashboard</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS — loaded at end of body; order is significant
+       ============================================================ -->
+
+  <!-- jQuery 3.7.1 — AJAX, DOM manipulation, event handling, animations -->
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"></script>
+
+  <!-- Chart.js 4.x — must load before charts.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- TechBoard scripts — each depends on everything above it -->
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/category.js"></script>
+
+  <noscript>
+    <p style="text-align:center;padding:2rem;color:#6B7FA3">
+      TechBoard requires JavaScript to display category data. Please enable JS in your browser.
+    </p>
+  </noscript>
+
+</body>
+</html>

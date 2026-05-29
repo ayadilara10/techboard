@@ -1,0 +1,775 @@
+/* ============================================================
+   category.css — Styles for category.html (category detail page)
+   Covers: page hero, sticky filter bar, two-column layout,
+           ranked tool list, chart column, premium gate,
+           compare modal, and all responsive breakpoints.
+   ============================================================ */
+
+/* ============================================================
+   PAGE HERO — category name + description + actions
+   ============================================================ */
+
+.page-hero {
+  background: linear-gradient(
+    160deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-xl) 0 var(--space-lg);
+}
+
+.breadcrumb {
+  margin-bottom: var(--space-md);
+}
+
+.breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.breadcrumb-link:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.page-hero-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.page-hero-text {
+  flex: 1;
+  min-width: 0;   /* allow text to shrink below content size */
+}
+
+.page-hero-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+/* "Loading…" placeholder shown before JS fetches the category */
+.page-hero-title--loading {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.page-hero-description {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 680px;
+  margin-bottom: var(--space-md);
+}
+
+.page-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ---- Compare button (in page hero) ---- */
+.compare-open-btn {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* Lock icon shown on compare button in free tier */
+.compare-open-btn.is-locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   FILTERS BAR — sticky row of industry chips + year selector
+   ============================================================ */
+
+.filters-bar {
+  position: sticky;
+  top: 60px;            /* offset to sit below the 60px site-header */
+  z-index: calc(var(--z-modal) - 1);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-md) 0;
+  /* Blur trick — same as site-header */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(15, 40, 64, 0.95);
+}
+
+[data-theme="light"] .filters-bar {
+  background-color: rgba(235, 240, 248, 0.95);
+}
+
+.filters-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  row-gap: var(--space-md);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.filter-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- Industry filter chip strip ---- */
+.industry-filter {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  padding-bottom: 2px;   /* keeps chip borders from being clipped */
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.industry-filter::-webkit-scrollbar { display: none; }
+
+.industry-chip {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 5px var(--space-md);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color var(--transition),
+              border-color var(--transition),
+              background-color var(--transition);
+}
+
+.industry-chip:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+/* Active / selected chip */
+.industry-chip.is-active {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  background-color: rgba(45, 212, 212, 0.08);
+}
+
+/* Locked chip — premium-only in free tier */
+.industry-chip.is-locked {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.industry-chip.is-locked::after {
+  content: ' 🔒';
+  font-size: 0.7em;
+}
+
+/* ---- Year selector ---- */
+.filter-group--year {
+  flex-shrink: 0;
+}
+
+.year-select {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 5px var(--space-md);
+  cursor: pointer;
+  width: auto;
+  transition: border-color var(--transition);
+}
+
+.year-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ============================================================
+   MAIN CONTENT AREA — two-column grid
+   ============================================================ */
+
+.category-content {
+  padding: var(--space-xl) 0 var(--space-2xl);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* ---- Column headers ---- */
+.column-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.column-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.column-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   TOOLS COLUMN — left side, full ranked list
+   ============================================================ */
+
+.tools-column {
+  min-width: 0;
+}
+
+/* Sticky on desktop so the right column (chart) can scroll past it */
+.chart-column {
+  position: sticky;
+  top: 130px;   /* site-header (60px) + filters-bar (~70px) */
+  min-width: 0;
+}
+
+/* ---- Individual tool row ---- */
+.tool-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: var(--space-md);
+  align-items: start;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: background-color var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+
+.tool-row:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+/* Rank number — #1, #2 … */
+.tool-rank {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding-top: 2px;
+  text-align: right;
+}
+
+/* Rank #1 gets the accent color */
+.tool-row:first-child .tool-rank {
+  color: var(--accent-primary);
+}
+
+/* ---- Tool info (middle column of row grid) ---- */
+.tool-info {
+  min-width: 0;
+}
+
+.tool-row-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.tool-row-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tool-row-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- Usage stat (right column of row grid) ---- */
+.tool-stat {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tool-stat-percent {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.tool-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---- Compare checkbox row at bottom of tool-info ---- */
+.tool-compare-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.compare-check {
+  accent-color: var(--accent-primary);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.compare-check-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ============================================================
+   PREMIUM GATE
+   Wraps gated content and positions the overlay over it.
+   ============================================================ */
+
+.premium-gate-wrapper {
+  position: relative;
+}
+
+/* The content inside this div is visually blurred */
+.premium-gated-content {
+  filter: blur(4px);
+  pointer-events: none;          /* prevent clicks on blurred items */
+  user-select: none;
+}
+
+/* Semi-transparent overlay that sits above the blurred content */
+.premium-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 31, 51, 0.3) 0%,
+    rgba(10, 31, 51, 0.92) 40%
+  );
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  z-index: var(--z-overlay);
+  text-align: center;
+}
+
+[data-theme="light"] .premium-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(244, 247, 251, 0.3) 0%,
+    rgba(244, 247, 251, 0.92) 40%
+  );
+}
+
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
+  background-color: rgba(197, 165, 114, 0.12);
+  border: 1px solid rgba(197, 165, 114, 0.35);
+  border-radius: 999px;
+  padding: 4px 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.premium-overlay-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0;
+}
+
+.premium-overlay-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  max-width: 280px;
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   CHART COLUMN
+   ============================================================ */
+
+.chart-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+
+/* The inner container constrains the canvas height */
+.chart-canvas-container {
+  position: relative;
+  height: 320px;
+  padding: var(--space-lg);
+}
+
+/* Loading state shown while chart data is being fetched */
+.chart-loading {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* Chart legend built inside the column header */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  padding: 0 var(--space-lg) var(--space-md);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   COMPARE MODAL
+   ============================================================ */
+
+/* Full-viewport semi-transparent backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(5, 15, 27, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  /* Fade animation */
+  animation: modal-fade-in 0.18s ease;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* hidden attribute removes the modal from layout */
+.modal-backdrop[hidden] { display: none; }
+
+.modal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 680px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: modal-slide-up 0.22s ease;
+}
+
+@keyframes modal-slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+.modal-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+/* ---- Tool picker inside modal ---- */
+.compare-tool-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.compare-picker-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.compare-picker-item:hover {
+  border-color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+}
+
+.compare-picker-item.is-selected {
+  border-color: var(--accent-primary);
+  background-color: rgba(45, 212, 212, 0.06);
+}
+
+.compare-picker-item.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.compare-picker-check {
+  accent-color: var(--accent-primary);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.compare-picker-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.compare-picker-stat {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* ---- Comparison results table ---- */
+.compare-results {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-lg);
+  /* Hidden until the user clicks "Compare" */
+  display: none;
+}
+
+.compare-results.is-visible { display: block; }
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.compare-table th {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background-color: var(--bg-secondary);
+}
+
+/* First column (row label) */
+.compare-table td:first-child {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Tool name row — tool column headers */
+.compare-table .compare-tool-header {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Wide desktop — give chart column more room */
+@media (min-width: 1280px) {
+  .content-grid {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+/* Tablet — stack columns */
+@media (max-width: 1023px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Chart is no longer sticky when stacked */
+  .chart-column {
+    position: static;
+  }
+
+  /* On tablet, chart comes second (below the tool list) */
+  .tools-column  { order: 1; }
+  .chart-column  { order: 2; }
+}
+
+/* Mobile — tighten spacing */
+@media (max-width: 768px) {
+  .page-hero-content {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .filters-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .industry-filter {
+    width: 100%;
+  }
+
+  .tool-row {
+    grid-template-columns: 28px 1fr;
+  }
+
+  /* Move the stat percentage below the name on small screens */
+  .tool-stat {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .modal {
+    max-height: 92vh;
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .column-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}

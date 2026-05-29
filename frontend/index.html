@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<!--
+  index.html — TechBoard Main Dashboard
+  Semantic HTML5 structure: <header>, <main>, <section>, <article>, <footer>
+  All styling is class-based — no inline style attributes (except CSS custom
+  properties set by JavaScript for dynamic values like usage bar widths).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechBoard — Tech Stack Intelligence for Product Builders. Real adoption data from 65,000+ developers across 10 industries.">
+  <meta name="theme-color" content="#0A1F33">
+
+  <!-- Open Graph for link previews -->
+  <meta property="og:title"       content="TechBoard — Tech Stack Intelligence">
+  <meta property="og:description" content="Track which tools, frameworks and databases are winning across Fintech, SaaS, E-Commerce and more.">
+  <meta property="og:type"        content="website">
+
+  <title>TechBoard — Tech Stack Intelligence for Product Builders</title>
+
+  <!-- Google Fonts: Inter (UI) + JetBrains Mono (code/numbers) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS — loaded in dependency order -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!--
+    API URL configuration — set before api.js loads.
+    Development (no Docker): keep 'http://localhost:3000'
+    Docker / nginx proxy:    change to '' (empty string — same-origin requests)
+  -->
+  <script>
+    window.TECHBOARD_API_URL = 'http://localhost:3000';
+  </script>
+
+  <!-- theme.js loaded in <head> (not deferred) so the correct theme is applied
+       BEFORE the browser paints, eliminating the dark-to-light flash. -->
+  <script src="js/theme.js"></script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       SITE HEADER
+       Sticky top bar: logo, nav links, theme toggle
+       ============================================================ -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+
+      <!-- Logo — links back to dashboard -->
+      <a href="index.html" class="logo" aria-label="TechBoard — home">
+        <img src="assets/logo.svg"
+             alt="TechBoard"
+             class="logo-img"
+             width="148" height="32"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <!-- Text fallback shown if SVG fails to load -->
+        <span class="logo-text" style="display:none">
+          Tech<span class="accent">Board</span>
+        </span>
+      </a>
+
+      <!-- Primary navigation -->
+      <nav class="header-nav" aria-label="Primary navigation">
+        <a href="stack-builder.html" class="nav-link">Stack Builder</a>
+        <a href="admin/login.html"   class="nav-link nav-link--admin">Admin</a>
+
+        <!-- Dark / light mode toggle — icon and label updated by theme.js -->
+        <button class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode">
+          <span id="themeToggleIcon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main id="main-content" role="main">
+
+    <!-- ---- HERO SECTION ---- -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="container">
+
+        <h1 class="hero-title" id="hero-heading">
+          Tech Stack Intelligence<br>
+          <span class="hero-accent">for Product Builders</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Real adoption data from 65,000+ developers.
+          Filter by industry, track trends, compare tools — and find
+          the right stack before you build.
+        </p>
+
+        <!-- Stats ticker — values populated by dashboard.js via API.getGlobalStats() -->
+        <div class="stats-ticker" role="region" aria-label="Platform statistics">
+
+          <div class="stat-item">
+            <span class="stat-value" id="stat-tools" aria-live="polite">—</span>
+            <span class="stat-label">Tools Tracked</span>
+          </div>
+
+          <div class="stat-divider" role="separator" aria-hidden="true"></div>
+
+          <div class="stat-item">
+            <span class="stat-value" id="stat-industries" aria-live="polite">—</span>
+            <span class="stat-label">Industries</span>
+          </div>
+
+          <div class="stat-divider" role="separator" aria-hidden="true"></div>
+
+          <div class="stat-item">
+            <span class="stat-value" id="stat-datapoints" aria-live="polite">—</span>
+            <span class="stat-label">Data Points</span>
+          </div>
+
+          <div class="stat-divider" role="separator" aria-hidden="true"></div>
+
+          <div class="stat-item">
+            <span class="stat-value" id="stat-sources" aria-live="polite">—</span>
+            <span class="stat-label">Data Sources</span>
+          </div>
+
+        </div><!-- /.stats-ticker -->
+
+      </div><!-- /.container -->
+    </section><!-- /.hero -->
+
+    <!-- ---- CATEGORIES GRID ---- -->
+    <section class="categories-section" aria-labelledby="categories-heading">
+      <div class="container">
+
+        <header class="section-header">
+          <h2 class="section-title" id="categories-heading">Browse by Category</h2>
+          <p class="section-subtitle">
+            Click any live category to see full rankings, year-over-year trends,
+            and industry-specific breakdowns.
+          </p>
+        </header>
+
+        <!--
+          #categoriesGrid is populated entirely by dashboard.js.
+          On load it receives 15 skeleton placeholder cards.
+          After data arrives, real category cards replace them.
+
+          Each rendered <article> inside this grid has:
+            - data-slug   = category slug (e.g. "frontend")
+            - data-status = "live" | "coming_soon"
+        -->
+        <div class="categories-grid"
+             id="categoriesGrid"
+             role="list"
+             aria-label="Technology categories"
+             aria-busy="true">
+          <!-- Skeleton cards injected here by dashboard.js on DOMContentLoaded -->
+        </div>
+
+      </div><!-- /.container -->
+    </section><!-- /.categories-section -->
+
+    <!-- ---- TRENDING NOW STRIP ---- -->
+    <section class="trending-section" aria-labelledby="trending-heading">
+      <div class="container">
+
+        <header class="section-header">
+          <h2 class="section-title" id="trending-heading">Trending Now</h2>
+          <p class="section-subtitle">
+            The fastest-rising tools across all categories, ranked by adoption momentum.
+          </p>
+        </header>
+
+        <!--
+          #trendingStrip is populated by dashboard.js once category data is loaded.
+          It derives trending tools from the already-fetched stats (no extra API call).
+          When Phase 6 wires up the Flask intelligence engine, this can be upgraded
+          to use API.getTrendingRising() for more precise trend scoring.
+        -->
+        <div class="trending-strip"
+             id="trendingStrip"
+             role="list"
+             aria-label="Trending tools"
+             aria-busy="true">
+          <!-- Trending chips injected by dashboard.js -->
+        </div>
+
+      </div><!-- /.container -->
+    </section><!-- /.trending-section -->
+
+  </main><!-- /#main-content -->
+
+  <!-- ============================================================
+       SITE FOOTER
+       Data source attribution + utility links
+       ============================================================ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+
+      <!-- Data attribution -->
+      <div class="footer-credits">
+        <p>
+          Data sourced from
+          <a href="https://survey.stackoverflow.co/2024/"
+             target="_blank" rel="noopener noreferrer">Stack Overflow Survey 2024</a>,
+          <a href="https://stateofjs.com"
+             target="_blank" rel="noopener noreferrer">State of JS 2024</a>,
+          <a href="https://stateofcss.com"
+             target="_blank" rel="noopener noreferrer">State of CSS 2024</a>, and
+          <a href="https://www.jetbrains.com/lp/devecosystem-2024/"
+             target="_blank" rel="noopener noreferrer">JetBrains Developer Ecosystem 2024</a>.
+        </p>
+        <p>TechBoard aggregates and indexes publicly available developer survey data.</p>
+      </div>
+
+      <!-- Utility links -->
+      <nav class="footer-links" aria-label="Utility links">
+        <a href="/feed.xml"        class="footer-link">RSS Feed</a>
+        <a href="/api/export/xml"  class="footer-link">XML Export</a>
+        <a href="stack-builder.html" class="footer-link">Stack Builder</a>
+        <a href="admin/login.html" class="footer-link">Admin</a>
+      </nav>
+
+    </div><!-- /.container -->
+  </footer><!-- /.site-footer -->
+
+  <!-- ============================================================
+       SCRIPTS
+       Loaded at the end of <body> so the DOM is ready before they execute.
+       Order matters: jQuery → Chart.js → api.js → dashboard.js
+       ============================================================ -->
+
+  <!-- jQuery 3.7.1 — required for AJAX calls, DOM manipulation, animations -->
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"></script>
+
+  <!-- Chart.js 4.x — loaded here so it is cached for category.html too -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- TechBoard app scripts — each depends on the ones above it -->
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+
+  <!-- No-script fallback for browsers with JavaScript disabled -->
+  <noscript>
+    <style>
+      .categories-grid { display: none; }
+      .stats-ticker .stat-value::after { content: 'N/A'; }
+    </style>
+    <p style="text-align:center;padding:2rem;color:#6B7FA3">
+      TechBoard requires JavaScript to load live data. Please enable JS in your browser.
+    </p>
+  </noscript>
+
+</body>
+</html>

@@ -1,0 +1,529 @@
+/* ============================================================
+   components.css — Reusable UI Component Library
+   Every visual pattern used across multiple pages lives here.
+   Page-specific layout belongs in dashboard.css / category.css / etc.
+   ============================================================ */
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 10px var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition),
+              border-color var(--transition),
+              box-shadow var(--transition),
+              opacity var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Primary — cyan fill */
+.btn--primary {
+  background-color: var(--accent-primary);
+  color: var(--color-navy);
+  border-color: var(--accent-primary);
+}
+
+.btn--primary:hover {
+  background-color: #26b8b8;
+  border-color: #26b8b8;
+  text-decoration: none;
+  color: var(--color-navy);
+}
+
+/* Secondary — outlined */
+.btn--secondary {
+  background-color: transparent;
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.btn--secondary:hover {
+  background-color: rgba(45, 212, 212, 0.08);
+  text-decoration: none;
+}
+
+/* Ghost — subtle, no border */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.btn--ghost:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+/* Small size modifier */
+.btn--sm {
+  font-size: 0.8rem;
+  padding: 6px var(--space-md);
+}
+
+/* Full width modifier */
+.btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ============================================================
+   BADGES — inline pill labels
+   ============================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge--live {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-rising);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.badge--soon {
+  background-color: rgba(107, 127, 163, 0.15);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.badge--premium {
+  background-color: rgba(197, 165, 114, 0.15);
+  color: var(--color-gold);
+  border: 1px solid rgba(197, 165, 114, 0.3);
+}
+
+/* ============================================================
+   TREND BADGES — ↑ Rising  →  Stable  ↓ Falling
+   ============================================================ */
+
+.trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+
+.trend-badge--rising {
+  background-color: rgba(34, 197, 94, 0.12);
+  color: var(--color-rising);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.trend-badge--stable {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: var(--color-stable);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.trend-badge--falling {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: var(--color-falling);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ============================================================
+   USAGE BARS — horizontal fill bars inside tool items
+   The fill width is driven by the CSS custom property
+   --fill-width set on the element by dashboard.js.
+   Using a CSS variable rather than a direct width style
+   lets the transition animate correctly.
+   ============================================================ */
+
+.usage-bar {
+  width: 100%;
+  height: 5px;
+  background-color: var(--border-color);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.usage-fill {
+  height: 100%;
+  border-radius: 999px;
+  /* Width is set via --fill-width CSS custom property */
+  width: var(--fill-width, 0%);
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(90deg, var(--accent-primary), #1ba8a8);
+}
+
+/* Colour variants tied to trend direction */
+.usage-fill--rising  { background: linear-gradient(90deg, var(--color-rising),  #16a34a); }
+.usage-fill--stable  { background: linear-gradient(90deg, var(--color-stable),  #d97706); }
+.usage-fill--falling { background: linear-gradient(90deg, var(--color-falling), #dc2626); }
+
+/* ============================================================
+   TOOL ITEMS — inside category cards
+   ============================================================ */
+
+.tool-item {
+  margin-bottom: var(--space-sm);
+}
+
+.tool-item:last-child {
+  margin-bottom: 0;
+}
+
+.tool-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.tool-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  /* Clamp to one line if the name is very long */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+
+.tool-percent {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+}
+
+.tool-percent--rising  { color: var(--color-rising); }
+.tool-percent--stable  { color: var(--color-stable); }
+.tool-percent--falling { color: var(--color-falling); }
+
+/* ============================================================
+   CATEGORY CARDS
+   ============================================================ */
+
+.category-card {
+  position: relative;           /* anchor for the coming-soon overlay */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  cursor: pointer;
+  overflow: hidden;             /* keeps overlay within rounded corners */
+  box-shadow: var(--shadow-card);
+
+  /* Cards start invisible; dashboard.js adds --visible to trigger entrance */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.35s ease,
+              transform 0.35s ease,
+              box-shadow var(--transition),
+              border-color var(--transition);
+}
+
+/* Entrance animation state toggled by dashboard.js */
+.category-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.category-card:hover:not(.category-card--muted) {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-primary);
+}
+
+/* Muted state for coming-soon cards — slightly faded but still visible */
+.category-card--muted {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.category-card--muted.category-card--visible {
+  opacity: 0.65;
+}
+
+/* ---- Card header: icon + name ---- */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.category-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(45, 212, 212, 0.08);
+  border: 1px solid rgba(45, 212, 212, 0.15);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.category-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* ---- Card body: tool list ---- */
+.card-body {
+  flex: 1;          /* push footer to bottom even on short lists */
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ---- Card footer: trend badge + link ---- */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.card-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.card-link:hover {
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+/* ============================================================
+   COMING SOON OVERLAY
+   Absolutely positioned over the card content, blurs it out.
+   ============================================================ */
+
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 31, 51, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: inherit;
+  z-index: var(--z-overlay);
+}
+
+[data-theme="light"] .coming-soon-overlay {
+  background: rgba(235, 240, 248, 0.85);
+}
+
+.coming-soon-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 999px;
+}
+
+/* ============================================================
+   SKELETON LOADING STATES
+   Pulse-animated placeholders shown while API data is in-flight.
+   ============================================================ */
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.65; }
+}
+
+.category-card--skeleton {
+  /* Override the entrance animation for skeletons — show immediately */
+  opacity: 1 !important;
+  transform: none !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+.skeleton {
+  background-color: var(--border-color);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* Pre-sized skeleton lines for the card layout */
+.skeleton--header {
+  height: 44px;
+  width: 44px;
+  border-radius: var(--radius-md);
+}
+
+.skeleton--title {
+  height: 18px;
+  width: 65%;
+  margin-bottom: var(--space-md);
+}
+
+.skeleton--line {
+  height: 10px;
+  margin-bottom: var(--space-sm);
+}
+
+.skeleton--line:nth-child(2) { width: 90%; }
+.skeleton--line:nth-child(3) { width: 75%; }
+.skeleton--line:nth-child(4) { width: 82%; }
+.skeleton--line:nth-child(5) { width: 60%; }
+
+/* ============================================================
+   TRENDING CHIPS — the "Trending Now" horizontal strip
+   ============================================================ */
+
+.trending-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 8px var(--space-md);
+  cursor: default;
+  white-space: nowrap;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  flex-shrink: 0;
+}
+
+.trending-chip:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.trending-chip-icon {
+  color: var(--color-rising);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.trending-chip-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.trending-chip-score {
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--color-rising);
+}
+
+/* ============================================================
+   ERROR AND EMPTY STATES
+   ============================================================ */
+
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  gap: var(--space-md);
+}
+
+.error-message {
+  font-size: 0.9rem;
+  color: var(--color-falling);
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.no-data {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ============================================================
+   LOADING SPINNER — used for inline load states on buttons/sections
+   ============================================================ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SECTION HEADER — shared title + subtitle block
+   ============================================================ */
+
+.section-header {
+  margin-bottom: var(--space-xl);
+}
+
+.section-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
