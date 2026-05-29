@@ -26,12 +26,15 @@ const corsMiddleware = require('./middleware/cors');
 const flask          = require('./utils/flaskClient');
 
 // Route handlers — each file exports an Express Router
-const categoriesRouter  = require('./routes/categories');
-const toolsRouter       = require('./routes/tools');
-const industriesRouter  = require('./routes/industries');
-const statsRouter       = require('./routes/stats');
-const trendsRouter      = require('./routes/trends');
-const xmlRouter         = require('./routes/xml');
+const categoriesRouter    = require('./routes/categories');
+const toolsRouter         = require('./routes/tools');
+const industriesRouter    = require('./routes/industries');
+const statsRouter         = require('./routes/stats');
+const trendsRouter        = require('./routes/trends');
+const xmlRouter           = require('./routes/xml');
+const stackBuilderRouter  = require('./routes/stack-builder');
+const authRouter          = require('./routes/auth');
+const adminRouter         = require('./routes/admin');
 
 // ---- Application setup ----
 
@@ -51,11 +54,14 @@ app.use(express.urlencoded({ extended: false }));
 
 // ---- Route mounting ----
 
-app.use('/api/categories', categoriesRouter);
-app.use('/api/tools',      toolsRouter);
-app.use('/api/industries', industriesRouter);
-app.use('/api/stats',      statsRouter);
-app.use('/api/trends',     trendsRouter);
+app.use('/api/auth',          authRouter);
+app.use('/api/categories',    categoriesRouter);
+app.use('/api/tools',         toolsRouter);
+app.use('/api/industries',    industriesRouter);
+app.use('/api/stats',         statsRouter);
+app.use('/api/trends',        trendsRouter);
+app.use('/api/stack-builder', stackBuilderRouter);
+app.use('/api/admin',         adminRouter);
 
 // XML routes are mounted at root so they can serve both /feed.xml and /api/export/xml
 app.use('/', xmlRouter);

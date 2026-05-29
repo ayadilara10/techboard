@@ -1,32 +1,19 @@
 /**
  * routes/stats.js — Statistics Routes
  *
- * GET /api/stats/top
- *   Top N tools in a category by usage_percent, using the most recent year of data.
- *   Query params:
- *     category  (string, required)   — category slug, e.g. 'frontend'
- *     industry  (string, optional)   — industry slug, e.g. 'fintech'. Omit for global.
- *     limit     (number, optional)   — how many tools to return, default 5, max 20
+ * Public (no auth):
+ *   GET /api/stats/top     — top N tools in a category
+ *   GET /api/stats/global  — platform-wide summary counts
+ *   GET /api/stats/usage   — historical usage for one tool (Chart.js data)
  *
- *   Examples:
- *     /api/stats/top?category=frontend&limit=3
- *     /api/stats/top?category=frontend&industry=fintech&limit=3
- *
- * GET /api/stats/global
- *   Platform-wide summary counts used by the hero stats ticker on the dashboard.
- *   Returns: total tools, live categories, industries, data points, sources.
- *
- * GET /api/stats/usage
- *   Historical usage percent for one tool across a list of years (for charts).
- *   Query params:
- *     tool      (string, required)   — tool slug, e.g. 'react'
- *     years     (string, optional)   — comma-separated years, e.g. '2022,2023,2024'
- *     industry  (string, optional)   — industry slug; omit for global
+ * Admin (JWT required):
+ *   POST /api/stats        — add a single usage_stats row manually
  */
 
-const express = require('express');
-const router  = express.Router();
-const pool    = require('../config/database');
+const express     = require('express');
+const router      = express.Router();
+const pool        = require('../config/database');
+const requireAuth = require('../middleware/auth');
 const { DEFAULT_TOP_LIMIT, MAX_TOP_LIMIT } = require('../config/constants');
 
 // ----------------------------------------------------------------
@@ -267,6 +254,66 @@ router.get('/usage', async (req, res) => {
   } catch (err) {
     console.error('[GET /api/stats/usage]', err.message);
     res.status(500).json({ error: 'Failed to fetch usage stats' });
+  }
+});
+
+// ----------------------------------------------------------------
+// POST /api/stats  (admin only — JWT required)
+// Manually insert one usage_stats row.
+// ----------------------------------------------------------------
+router.post('/', requireAuth, async (req, res) => {
+  const {
+    tool_id,
+    industry_id,
+    year,
+    usage_percent,
+    satisfaction,
+    sample_size,
+    source,
+  } = req.body || {};
+
+  // Required fields
+  if (!tool_id || !Number.isInteger(Number(tool_id))) {
+    return res.status(400).json({ error: 'tool_id is required and must be an integer' });
+  }
+  if (!year || !Number.isInteger(Number(year)) || year < 2000 || year > 2099) {
+    return res.status(400).json({ error: 'year is required and must be a 4-digit integer between 2000 and 2099' });
+  }
+  if (usage_percent === undefined || usage_percent === null) {
+    return res.status(400).json({ error: 'usage_percent is required' });
+  }
+  const pct = parseFloat(usage_percent);
+  if (isNaN(pct) || pct < 0 || pct > 100) {
+    return res.status(400).json({ error: 'usage_percent must be a number between 0 and 100' });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      `INSERT INTO usage_stats
+         (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        Number(tool_id),
+        industry_id ? Number(industry_id) : null,
+        Number(year),
+        pct,
+        satisfaction !== undefined ? parseFloat(satisfaction) : null,
+        sample_size  !== undefined ? Number(sample_size)      : null,
+        source       || null,
+      ]
+    );
+
+    return res.status(201).json({
+      message: 'Usage stat added',
+      data: { id: result.insertId },
+    });
+
+  } catch (err) {
+    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({ error: 'tool_id or industry_id does not exist' });
+    }
+    console.error('[POST /api/stats]', err.message);
+    return res.status(500).json({ error: 'Failed to add usage stat' });
   }
 });
 

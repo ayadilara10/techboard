@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<!--
+  stack-builder.html — TechBoard Tech Stack Builder
+  Three-step wizard: (1) select industry, (2) select product type, (3) view recommended stack.
+  All dynamic content is injected by stack-builder.js.
+  Semantic HTML5 structure: <header>, <main>, <section>, <article>, <footer>
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechBoard Stack Builder — get a recommended tech stack for your industry and product type in seconds.">
+  <meta name="theme-color" content="#0A1F33">
+
+  <title>Stack Builder — TechBoard</title>
+
+  <!-- Google Fonts: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS — loaded in dependency order -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/stack-builder.css">
+
+  <!--
+    API URL configuration — must match index.html.
+    Development: 'http://localhost:3000'
+    Docker / nginx: '' (empty string → same-origin)
+  -->
+  <script>
+    window.TECHBOARD_API_URL = 'http://localhost:3000';
+  </script>
+
+  <!-- theme.js in <head> to apply saved theme before first paint -->
+  <script src="js/theme.js"></script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       SITE HEADER — consistent with index.html and category.html
+       ============================================================ -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+
+      <a href="index.html" class="logo" aria-label="TechBoard — home">
+        <img src="assets/logo.svg"
+             alt="TechBoard"
+             class="logo-img"
+             width="148" height="32"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <span class="logo-text" style="display:none">
+          Tech<span class="accent">Board</span>
+        </span>
+      </a>
+
+      <nav class="header-nav" aria-label="Primary navigation">
+        <a href="stack-builder.html" class="nav-link nav-link--active">Stack Builder</a>
+        <a href="admin/login.html"   class="nav-link nav-link--admin">Admin</a>
+        <button class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode">
+          <span id="themeToggleIcon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main id="main-content" role="main">
+
+    <!-- ---- PAGE HERO ---- -->
+    <section class="builder-hero" aria-labelledby="builder-heading">
+      <div class="container">
+        <h1 class="builder-hero-title" id="builder-heading">
+          Build Your <span class="builder-hero-accent">Tech Stack</span>
+        </h1>
+        <p class="builder-hero-subtitle">
+          Answer two questions and get a full recommended stack — backed by real adoption data
+          from 65,000+ developers.
+        </p>
+      </div>
+    </section>
+
+    <!-- ---- WIZARD SECTION ---- -->
+    <section class="builder-wizard" aria-label="Stack builder wizard">
+      <div class="container">
+
+        <!-- Step indicator — updated by stack-builder.js as the user progresses -->
+        <nav class="step-indicator" aria-label="Wizard steps" role="tablist">
+
+          <div class="step-item is-active" id="stepIndicator1" role="tab" aria-selected="true">
+            <span class="step-number" aria-hidden="true">1</span>
+            <span class="step-label">Industry</span>
+          </div>
+
+          <div class="step-connector" role="presentation" aria-hidden="true"></div>
+
+          <div class="step-item" id="stepIndicator2" role="tab" aria-selected="false">
+            <span class="step-number" aria-hidden="true">2</span>
+            <span class="step-label">Product Type</span>
+          </div>
+
+          <div class="step-connector" role="presentation" aria-hidden="true"></div>
+
+          <div class="step-item" id="stepIndicator3" role="tab" aria-selected="false">
+            <span class="step-number" aria-hidden="true">3</span>
+            <span class="step-label">Your Stack</span>
+          </div>
+
+        </nav>
+
+        <!-- ============================================================
+             STEP 1 — Industry selection
+             stack-builder.js populates #industryGrid with builder-cards
+             ============================================================ -->
+        <div class="builder-panel is-active"
+             id="panelStep1"
+             role="tabpanel"
+             aria-labelledby="stepIndicator1">
+
+          <div class="builder-section-heading">
+            <h2>Select Your Industry</h2>
+            <p>Choose the industry your product operates in — we'll show stacks tuned to it.</p>
+          </div>
+
+          <!--
+            #industryGrid — injected by stack-builder.js.
+            Each <article> is a selectable industry card.
+          -->
+          <div class="builder-grid"
+               id="industryGrid"
+               role="list"
+               aria-label="Industry options"
+               aria-busy="true">
+            <!-- Skeleton cards shown while API loads -->
+          </div>
+
+        </div><!-- /#panelStep1 -->
+
+        <!-- ============================================================
+             STEP 2 — Product type selection
+             stack-builder.js populates #productTypeGrid with builder-cards
+             ============================================================ -->
+        <div class="builder-panel"
+             id="panelStep2"
+             role="tabpanel"
+             aria-labelledby="stepIndicator2"
+             hidden>
+
+          <div class="builder-section-heading">
+            <p class="builder-breadcrumb">
+              <span id="crumb1">Industry</span>
+              <span class="crumb-sep">›</span>
+              <span class="crumb-selected" id="crumbIndustryName">—</span>
+            </p>
+            <h2>What are you building?</h2>
+            <p>Select the product type that best describes your project.</p>
+          </div>
+
+          <div class="builder-grid"
+               id="productTypeGrid"
+               role="list"
+               aria-label="Product type options">
+            <!-- Injected by stack-builder.js -->
+          </div>
+
+          <!-- Back button -->
+          <div style="text-align:center; margin-top: var(--space-xl)">
+            <button class="builder-back-btn" id="backToStep1" type="button">
+              ← Back to Industries
+            </button>
+          </div>
+
+        </div><!-- /#panelStep2 -->
+
+        <!-- ============================================================
+             STEP 3 — Stack result
+             stack-builder.js populates #stackGrid with tool cards
+             ============================================================ -->
+        <div class="builder-panel"
+             id="panelStep3"
+             role="tabpanel"
+             aria-labelledby="stepIndicator3"
+             hidden>
+
+          <!-- Loading state — visible while fetching stack data -->
+          <div class="builder-loading" id="stackLoading">
+            <div class="builder-loading-spinner" aria-hidden="true"></div>
+            <p>Building your recommended stack…</p>
+          </div>
+
+          <!-- Error state — shown if API call fails -->
+          <div class="builder-error" id="stackError" hidden>
+            <h3>Could not load stack</h3>
+            <p id="stackErrorMessage">An unexpected error occurred. Please try again.</p>
+          </div>
+
+          <!-- Result content — revealed when data is ready -->
+          <div id="stackResult" hidden>
+
+            <div class="result-header">
+              <!-- Breadcrumb: Industry › Product Type -->
+              <p class="builder-breadcrumb">
+                <span id="crumb2Industry" class="crumb-selected"></span>
+                <span class="crumb-sep">›</span>
+                <span id="crumb2Type" class="crumb-selected"></span>
+              </p>
+
+              <!-- Profile title and description injected by JS -->
+              <h2 id="stackTitle">Recommended Stack</h2>
+              <p id="stackDescription"></p>
+
+              <!-- Action buttons -->
+              <div class="result-actions">
+                <button class="btn btn--primary" id="exportXmlBtn" type="button">
+                  Export as XML
+                </button>
+                <button class="builder-back-btn" id="backToStep2" type="button">
+                  ← Change Product Type
+                </button>
+                <button class="builder-back-btn" id="startOverBtn" type="button">
+                  Start Over
+                </button>
+              </div>
+            </div><!-- /.result-header -->
+
+            <!--
+              #stackGrid — one <article> per tool in the stack, ordered by category.
+              Injected by stack-builder.js after API response arrives.
+            -->
+            <div class="stack-grid"
+                 id="stackGrid"
+                 role="list"
+                 aria-label="Recommended tech stack">
+              <!-- Injected by stack-builder.js -->
+            </div>
+
+          </div><!-- /#stackResult -->
+
+          <!-- Back button also shown outside result area during loading -->
+          <div style="text-align:center; margin-top: var(--space-xl)" id="step3BackRow">
+            <button class="builder-back-btn" id="backToStep2b" type="button">
+              ← Change Product Type
+            </button>
+          </div>
+
+        </div><!-- /#panelStep3 -->
+
+      </div><!-- /.container -->
+    </section><!-- /.builder-wizard -->
+
+  </main><!-- /#main-content -->
+
+  <!-- ============================================================
+       SITE FOOTER
+       ============================================================ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+
+      <div class="footer-credits">
+        <p>
+          Stack recommendations based on adoption data from
+          <a href="https://survey.stackoverflow.co/2024/"
+             target="_blank" rel="noopener noreferrer">Stack Overflow Survey 2024</a>,
+          <a href="https://stateofjs.com"
+             target="_blank" rel="noopener noreferrer">State of JS 2024</a>, and
+          <a href="https://www.jetbrains.com/lp/devecosystem-2024/"
+             target="_blank" rel="noopener noreferrer">JetBrains Developer Ecosystem 2024</a>.
+        </p>
+      </div>
+
+      <nav class="footer-links" aria-label="Utility links">
+        <a href="index.html"           class="footer-link">Dashboard</a>
+        <a href="/feed.xml"            class="footer-link">RSS Feed</a>
+        <a href="/api/export/xml"      class="footer-link">XML Export</a>
+        <a href="admin/login.html"     class="footer-link">Admin</a>
+      </nav>
+
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       Order: jQuery → api.js → stack-builder.js
+       ============================================================ -->
+
+  <!-- jQuery 3.7.1 — required for AJAX and DOM manipulation -->
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"></script>
+
+  <!-- TechBoard scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/stack-builder.js"></script>
+
+  <noscript>
+    <p style="text-align:center;padding:2rem;color:#6B7FA3">
+      The Stack Builder requires JavaScript. Please enable JS in your browser.
+    </p>
+  </noscript>
+
+</body>
+</html>

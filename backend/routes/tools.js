@@ -1,23 +1,20 @@
 /**
  * routes/tools.js — Tool Routes
  *
- * GET /api/tools
- *   Returns all active tools, paginated.
- *   Query params:
- *     page      (number, default 1)   — which page to return
- *     limit     (number, default 20)  — items per page, max 100
- *     category  (string, optional)    — filter by category slug
+ * Public (no auth):
+ *   GET /api/tools          — paginated list of active tools
+ *   GET /api/tools/:slug    — single tool with usage history and trends
  *
- * GET /api/tools/:slug
- *   Returns a single tool by its slug, with:
- *     - Full usage history across all years and all industries
- *     - All pre-computed trend rows (global + per-industry)
- *     - Parent category info
+ * Admin (JWT required via requireAuth middleware):
+ *   POST   /api/tools        — create a new tool
+ *   PUT    /api/tools/:id    — update an existing tool by numeric id
+ *   DELETE /api/tools/:id    — soft-delete (is_active = 0) a tool by id
  */
 
-const express = require('express');
-const router  = express.Router();
-const pool    = require('../config/database');
+const express     = require('express');
+const router      = express.Router();
+const pool        = require('../config/database');
+const requireAuth = require('../middleware/auth');
 const { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } = require('../config/constants');
 
 // ----------------------------------------------------------------
@@ -174,6 +171,149 @@ router.get('/:slug', async (req, res) => {
   } catch (err) {
     console.error('[GET /api/tools/:slug]', err.message);
     res.status(500).json({ error: 'Failed to fetch tool' });
+  }
+});
+
+// ----------------------------------------------------------------
+// POST /api/tools  (admin only — JWT required)
+// ----------------------------------------------------------------
+router.post('/', requireAuth, async (req, res) => {
+  const {
+    category_id,
+    slug,
+    name,
+    description,
+    website_url,
+    logo_url,
+    open_source,
+    first_released,
+  } = req.body || {};
+
+  // Server-side validation — all fields checked even if the client validated too
+  if (!category_id || !Number.isInteger(Number(category_id))) {
+    return res.status(400).json({ error: 'category_id is required and must be an integer' });
+  }
+  if (!slug || typeof slug !== 'string' || !slug.trim()) {
+    return res.status(400).json({ error: 'slug is required' });
+  }
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    return res.status(400).json({ error: 'name is required' });
+  }
+
+  // Slugs must be URL-safe: lowercase letters, numbers, hyphens only
+  if (!/^[a-z0-9-]+$/.test(slug.trim())) {
+    return res.status(400).json({ error: 'slug may only contain lowercase letters, numbers, and hyphens' });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      `INSERT INTO tools
+         (category_id, slug, name, description, website_url, logo_url, open_source, first_released)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        Number(category_id),
+        slug.trim().toLowerCase(),
+        name.trim(),
+        description || null,
+        website_url || null,
+        logo_url    || null,
+        open_source === undefined ? true : Boolean(open_source),
+        first_released ? Number(first_released) : null,
+      ]
+    );
+
+    return res.status(201).json({
+      message: 'Tool created',
+      data: { id: result.insertId, slug: slug.trim().toLowerCase(), name: name.trim() },
+    });
+
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: `A tool with slug '${slug}' already exists` });
+    }
+    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({ error: `category_id ${category_id} does not exist` });
+    }
+    console.error('[POST /api/tools]', err.message);
+    return res.status(500).json({ error: 'Failed to create tool' });
+  }
+});
+
+// ----------------------------------------------------------------
+// PUT /api/tools/:id  (admin only — JWT required)
+// ----------------------------------------------------------------
+router.put('/:id', requireAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1) {
+    return res.status(400).json({ error: 'Tool id must be a positive integer' });
+  }
+
+  const allowed = ['category_id', 'slug', 'name', 'description', 'website_url',
+                   'logo_url', 'open_source', 'first_released', 'is_active'];
+
+  // Build SET clause only from fields present in the request body
+  const updates = [];
+  const values  = [];
+
+  for (const field of allowed) {
+    if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+      updates.push(`${field} = ?`);
+      values.push(req.body[field]);
+    }
+  }
+
+  if (updates.length === 0) {
+    return res.status(400).json({ error: 'No valid fields provided for update' });
+  }
+
+  values.push(id);   // for WHERE id = ?
+
+  try {
+    const [result] = await pool.execute(
+      `UPDATE tools SET ${updates.join(', ')} WHERE id = ?`,
+      values
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: `Tool id ${id} not found` });
+    }
+
+    return res.json({ message: 'Tool updated', data: { id } });
+
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'A tool with that slug already exists' });
+    }
+    console.error('[PUT /api/tools/:id]', err.message);
+    return res.status(500).json({ error: 'Failed to update tool' });
+  }
+});
+
+// ----------------------------------------------------------------
+// DELETE /api/tools/:id  (admin only — JWT required)
+// Soft-delete: sets is_active = 0 so historical data is preserved.
+// ----------------------------------------------------------------
+router.delete('/:id', requireAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1) {
+    return res.status(400).json({ error: 'Tool id must be a positive integer' });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      `UPDATE tools SET is_active = 0 WHERE id = ? AND is_active = 1`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: `Tool id ${id} not found or already inactive` });
+    }
+
+    return res.json({ message: `Tool id ${id} deactivated (soft-deleted)` });
+
+  } catch (err) {
+    console.error('[DELETE /api/tools/:id]', err.message);
+    return res.status(500).json({ error: 'Failed to delete tool' });
   }
 });
 
