@@ -29,6 +29,7 @@ const categoriesRouter  = require('./routes/categories');
 const toolsRouter       = require('./routes/tools');
 const industriesRouter  = require('./routes/industries');
 const statsRouter       = require('./routes/stats');
+const xmlRouter         = require('./routes/xml');
 
 // ---- Application setup ----
 
@@ -52,6 +53,9 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/tools',      toolsRouter);
 app.use('/api/industries', industriesRouter);
 app.use('/api/stats',      statsRouter);
+
+// XML routes are mounted at root so they can serve both /feed.xml and /api/export/xml
+app.use('/', xmlRouter);
 
 // ---- Utility endpoints ----
 
