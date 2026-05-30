@@ -34,6 +34,35 @@
 }
 
 /* ============================================================
+   SITE HEADER — shared across all pages
+   (dashboard.css may override for dashboard-specific tweaks)
+   ============================================================ */
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-left: auto;
+}
+
+/* Logo accent: cyan in dark mode, gold in light mode */
+.logo-text .accent {
+  color: var(--accent-primary);
+}
+
+[data-theme="light"] .logo-text .accent,
+[data-theme="light"] .logo span:last-child {
+  color: var(--accent-secondary);
+}
+
+/* ============================================================
    BUTTONS
    ============================================================ */
 

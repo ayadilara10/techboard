@@ -81,8 +81,14 @@
     /* Honour the saved preference, falling back to dark */
     applyTheme(saved === LIGHT ? LIGHT : DARK);
 
-    /* Wire up the toggle button once the DOM is ready */
+    /* Wire up the toggle button once the DOM is ready.
+     Also re-run updateToggleButton here because init() may have run
+     before the DOM was built (script is in <head>), making the first
+     call to updateToggleButton a no-op (element not yet in the DOM). */
     document.addEventListener('DOMContentLoaded', function () {
+      var currentTheme = document.documentElement.getAttribute('data-theme') || DARK;
+      updateToggleButton(currentTheme);
+
       var btn = document.getElementById('themeToggle');
       if (btn) {
         btn.addEventListener('click', toggleTheme);
