@@ -394,6 +394,9 @@
               sessionStorage.setItem('techboard_jwt', response.token);
             }
 
+            /* Grant premium preview mode — category.js reads this to unlock gated features */
+            localStorage.setItem('techboard_tier', 'premium');
+
             showAlert('Login successful — redirecting…', 'success');
 
             /* Short delay so the user sees the success message, then redirect */

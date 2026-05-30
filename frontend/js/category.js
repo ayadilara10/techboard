@@ -46,10 +46,9 @@
   var selectedSlugs   = [];     /* slugs chosen for comparison (max 3)     */
 
   /* USER TIER — controls which features are gated.
-   * In this phase: always 'free'.
-   * Phase 9 will wire up JWT auth and set this from the server response.
-   * Changing this to 'premium' unlocks all features immediately. */
-  var USER_TIER       = 'free';  /* 'free' | 'premium' */
+   * Read from localStorage so admins who logged in via JWT get premium preview.
+   * Falls back to 'free' for all unauthenticated visitors. */
+  var USER_TIER       = (localStorage.getItem('techboard_tier') === 'premium') ? 'premium' : 'free';
   var FREE_VISIBLE    = 3;       /* tool rows visible without a subscription */
 
   /* ============================================================
