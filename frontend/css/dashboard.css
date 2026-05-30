@@ -142,15 +142,17 @@
 .hero .container { position: relative; z-index: 1; }
 
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
   margin-bottom: var(--space-md);
   color: var(--text-primary);
+  animation: fadeSlideUp 0.8s ease forwards;
 }
 
 .hero-accent {
+  color: var(--accent-primary);
+}
+
+.hero-accent-italic {
+  font-style: italic;
   color: var(--accent-primary);
 }
 
@@ -159,6 +161,7 @@
   color: var(--text-muted);
   max-width: 560px;
   margin-bottom: var(--space-xl);
+  animation: fadeSlideUp 0.8s 0.2s ease both;
 }
 
 /* ============================================================
@@ -177,6 +180,7 @@
   padding: var(--space-lg) var(--space-xl);
   width: fit-content;
   max-width: 100%;
+  animation: fadeSlideUp 0.8s 0.4s ease both;
 }
 
 .stat-item {

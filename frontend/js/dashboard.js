@@ -60,6 +60,7 @@
     renderSkeletons();      /* show placeholders immediately */
     loadGlobalStats();      /* fill in hero ticker numbers */
     loadDashboard();        /* fetch categories + tools, build real cards */
+    initSectionObserver();  /* scroll-reveal for section titles */
   });
 
   /* ============================================================
@@ -449,6 +450,36 @@
         },
       }
     );
+  }
+
+  /* ============================================================
+     SCROLL-REVEAL — section titles
+     IntersectionObserver watches every .section-title element and
+     adds .is-visible once it enters the viewport, triggering the
+     CSS opacity + translateY transition defined in components.css.
+     ============================================================ */
+
+  function initSectionObserver() {
+    /* IntersectionObserver fires when any observed element crosses the
+     * viewport threshold. rootMargin pulls the trigger 48px before the
+     * element fully enters, so the transition starts slightly early. */
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            $(entry.target).addClass('is-visible');
+            /* Stop observing once revealed — it only needs to animate in once */
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -48px 0px', threshold: 0.1 }
+    );
+
+    /* Observe every section title on the page */
+    document.querySelectorAll('.section-title').forEach(function (el) {
+      observer.observe(el);
+    });
   }
 
   /**
