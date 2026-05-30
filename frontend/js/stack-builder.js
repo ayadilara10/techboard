@@ -147,16 +147,16 @@
 
       /* Build the card element using jQuery DOM construction */
       var $card = $('<article>', {
-        'class':       'builder-card',
+        'class':       'builder-card industry-card',
         'role':        'listitem',
         'tabindex':    '0',
         'aria-label':  industryGroup.industry_name,
       });
 
       $card.append(
-        $('<div>', { 'class': 'builder-card-icon', 'aria-hidden': 'true' }).text(icon),
-        $('<h3',   { 'class': 'builder-card-name' }).text(industryGroup.industry_name),
-        $('<p>',   { 'class': 'builder-card-meta' }).text(label)
+        $('<div>', { 'class': 'industry-card-icon', 'aria-hidden': 'true' }).text(icon),
+        $('<div>', { 'class': 'industry-card-name' }).text(industryGroup.industry_name),
+        $('<div>', { 'class': 'industry-card-count' }).text(label)
       );
 
       /* Click — advance to Step 2 */

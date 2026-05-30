@@ -1205,6 +1205,198 @@ INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is
 (9, 42, 6, 'Webhooks notify the warehouse, carrier, and customer at each fulfilment milestone',        TRUE);
 
 -- ============================================================
+-- ADDITIONAL STACK PROFILES — remaining 8 industries
+-- Profiles 10-25
+-- ============================================================
+
+INSERT INTO stack_profiles (industry_id, product_type, description, is_published) VALUES
+(2,  'B2B Dashboard',              'Scalable multi-tenant dashboard platform for enterprise SaaS',                  TRUE),
+(2,  'Developer API Platform',     'High-performance API gateway with developer portal and documentation',          TRUE),
+(4,  'Patient Portal',             'HIPAA-compliant patient record and appointment management system',              TRUE),
+(4,  'Telemedicine App',           'Real-time video consultation and remote patient monitoring platform',           TRUE),
+(6,  'Learning Management System', 'Interactive LMS with progress tracking and recommendation engine',              TRUE),
+(6,  'Online Course Platform',     'SEO-optimized course catalog with streaming video and payment integration',     TRUE),
+(5,  'Streaming Platform',         'High-throughput video streaming service with global CDN delivery',              TRUE),
+(5,  'Content Management System',  'Headless CMS with editorial workflow and multi-channel publishing',             TRUE),
+(8,  'Fleet Management System',    'Real-time GPS tracking and dispatch platform for logistics fleets',             TRUE),
+(8,  'Supply Chain Platform',      'Enterprise supply chain visibility and inventory management system',            TRUE),
+(7,  'Citizen Portal',             'Accessible government services portal meeting WCAG 2.1 standards',              TRUE),
+(7,  'Data Reporting System',      'Automated public data aggregation and interactive reporting dashboard',          TRUE),
+(9,  'Project Management Platform','Collaborative construction project planning with Gantt and resource tracking',  TRUE),
+(9,  'Field Operations App',       'Offline-capable mobile app for site inspections and progress reporting',        TRUE),
+(10, 'Investment Dashboard',       'Real-time portfolio analytics with quantitative analysis and risk metrics',     TRUE),
+(10, 'Banking Mobile App',         'PCI-compliant cross-platform mobile banking with biometric authentication',     TRUE);
+
+-- Stack 10: B2B Dashboard (profile_id=10, industry=saas)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(10, 1,  1, 'Node.js handles thousands of concurrent dashboard sessions without blocking',              TRUE),
+(10, 8,  2, 'React component architecture supports complex multi-widget dashboard layouts',             TRUE),
+(10, 15, 3, 'PostgreSQL row-level security enables clean multi-tenant data isolation',                  TRUE),
+(10, 22, 4, 'AWS enterprise certifications satisfy B2B procurement and compliance reviews',             TRUE),
+(10, 31, 5, 'GitHub Actions integrates directly into pull request workflow for fast iteration',         TRUE),
+(10, 37, 6, 'GraphQL lets each dashboard widget fetch exactly the data fields it displays',             TRUE);
+
+-- Stack 11: Developer API Platform (profile_id=11, industry=saas)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(11, 5,  1, 'Go delivers sub-millisecond latency under heavy API load with minimal memory use',         TRUE),
+(11, 12, 2, 'Next.js SSG builds the docs portal with instant page loads and great SEO',                 TRUE),
+(11, 15, 3, 'PostgreSQL tracks API keys, rate limits, and usage quotas reliably',                       TRUE),
+(11, 28, 4, 'Cloudflare edge network caches API responses globally and blocks DDoS attacks',            TRUE),
+(11, 32, 5, 'Terraform provisions reproducible environments for staging and production parity',         TRUE),
+(11, 41, 6, 'OpenAPI spec drives automatic client SDKs, docs generation, and API linting',             TRUE);
+
+-- Stack 12: Patient Portal (profile_id=12, industry=healthcare)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(12, 4,  1, '.NET is the dominant healthcare enterprise stack with mature HIPAA compliance tooling',    TRUE),
+(12, 8,  2, 'React with Reach UI meets WCAG 2.1 accessibility requirements for patient-facing apps',   TRUE),
+(12, 20, 3, 'SQL Server provides native encryption and auditing required for HIPAA compliance',         TRUE),
+(12, 23, 4, 'Azure HIPAA BAA and compliance centre covers healthcare regulatory requirements',          TRUE),
+(12, 31, 5, 'GitHub Actions provides audit trails for every deployment to satisfy compliance review',   TRUE),
+(12, 36, 6, 'REST aligns with HL7 FHIR R4 standards for interoperability with EHR systems',           TRUE);
+
+-- Stack 13: Telemedicine App (profile_id=13, industry=healthcare)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(13, 1,  1, 'Node.js event loop manages thousands of concurrent WebRTC signalling sessions',            TRUE),
+(13, 44, 8, 'Flutter delivers a single native codebase for iOS and Android with smooth video UI',      TRUE),
+(13, 15, 3, 'PostgreSQL stores encrypted patient records and session logs for compliance',              TRUE),
+(13, 22, 4, 'AWS Chime SDK provides HIPAA-eligible video infrastructure with global reach',             TRUE),
+(13, 30, 5, 'Kubernetes auto-scales video worker pods during peak appointment hours',                   TRUE),
+(13, 39, 6, 'WebSockets carry real-time video signalling and in-session chat with sub-50ms latency',   TRUE);
+
+-- Stack 14: Learning Management System (profile_id=14, industry=education)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(14, 2,  1, 'Python powers ML-based learning path recommendations and assessment analytics',            TRUE),
+(14, 8,  2, 'React interactive components handle quizzes, progress bars, and video players',           TRUE),
+(14, 15, 3, 'PostgreSQL models courses, students, enrollments, and progress with referential integrity',TRUE),
+(14, 22, 4, 'AWS S3 and CloudFront store and stream course videos to students worldwide',               TRUE),
+(14, 31, 5, 'GitHub Actions runs automated tests for grading logic on every content update',           TRUE),
+(14, 36, 6, 'REST supports LTI 1.3 and SCORM integration with third-party educational tools',          TRUE);
+
+-- Stack 15: Online Course Platform (profile_id=15, industry=education)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(15, 1,  1, 'Node.js handles concurrent video transcoding jobs and streaming API requests',             TRUE),
+(15, 12, 2, 'Next.js ISR generates SEO-optimised course landing pages for organic discovery',           TRUE),
+(15, 16, 3, 'MySQL is battle-tested for content-heavy platforms with complex category trees',           TRUE),
+(15, 28, 4, 'Cloudflare Stream delivers global adaptive-bitrate video at minimal bandwidth cost',       TRUE),
+(15, 29, 5, 'Docker ensures identical environments across local dev, staging, and production',          TRUE),
+(15, 42, 6, 'Webhooks push enrollment confirmations, payment events, and certificate notifications',    TRUE);
+
+-- Stack 16: Streaming Platform (profile_id=16, industry=media)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(16, 5,  1, 'Go sustains high concurrency for live stream ingestion and HLS segment serving',          TRUE),
+(16, 8,  2, 'React renders adaptive video player UIs with real-time recommendation carousels',         TRUE),
+(16, 15, 3, 'PostgreSQL stores content catalog, user watch history, and subscription state',            TRUE),
+(16, 22, 4, 'AWS CloudFront and MediaConvert provide global CDN and live transcoding pipeline',        TRUE),
+(16, 30, 5, 'Kubernetes auto-scales encoder pods for live event traffic spikes',                        TRUE),
+(16, 39, 6, 'WebSockets power real-time comments, live reactions, and viewer count updates',           TRUE);
+
+-- Stack 17: Content Management System (profile_id=17, industry=media)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(17, 1,  1, 'Node.js drives the headless CMS API and webhook delivery to downstream channels',         TRUE),
+(17, 12, 2, 'Next.js ISR regenerates published article pages instantly without full rebuilds',          TRUE),
+(17, 17, 3, 'MongoDB flexible schema accommodates varied content types — articles, galleries, podcasts',TRUE),
+(17, 25, 4, 'Vercel provides zero-config Next.js deployments with per-PR preview environments',        TRUE),
+(17, 31, 5, 'GitHub Actions automates content pipeline tests and deployment on every merge',            TRUE),
+(17, 37, 6, 'GraphQL lets editorial tools and front-end apps query exactly the content fields needed', TRUE);
+
+-- Stack 18: Fleet Management System (profile_id=18, industry=logistics)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(18, 1,  1, 'Node.js processes continuous GPS telemetry streams from thousands of vehicles',           TRUE),
+(18, 8,  2, 'React with Mapbox renders live vehicle positions and route overlays for dispatchers',     TRUE),
+(18, 15, 3, 'PostgreSQL with PostGIS extension handles geospatial queries for route optimisation',     TRUE),
+(18, 22, 4, 'AWS IoT Core ingests device telemetry reliably at scale with low latency',                TRUE),
+(18, 29, 5, 'Docker enables edge deployments on depot servers with limited connectivity',              TRUE),
+(18, 39, 6, 'WebSockets push sub-second vehicle position updates to the dispatch dashboard',           TRUE);
+
+-- Stack 19: Supply Chain Platform (profile_id=19, industry=logistics)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(19, 3,  1, 'Java enterprise patterns handle complex supplier integrations and event-driven workflows', TRUE),
+(19, 8,  2, 'React data grids and workflow components manage complex order and inventory views',        TRUE),
+(19, 15, 3, 'PostgreSQL models suppliers, purchase orders, inventory, and shipment relationships',     TRUE),
+(19, 23, 4, 'Azure Logic Apps and B2B connectors simplify EDI integration with trading partners',      TRUE),
+(19, 30, 5, 'Kubernetes provides high-availability for critical supply chain operations',               TRUE),
+(19, 36, 6, 'REST integrates with WMS, ERP, and carrier systems via standard HTTP APIs',               TRUE);
+
+-- Stack 20: Citizen Portal (profile_id=20, industry=government)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(20, 4,  1, '.NET is the dominant government backend stack with mature Active Directory integration',   TRUE),
+(20, 8,  2, 'React with accessible component libraries meets WCAG 2.1 AA government requirements',    TRUE),
+(20, 20, 3, 'SQL Server is the established government database with native Windows authentication',    TRUE),
+(20, 23, 4, 'Azure Government cloud provides FedRAMP-authorised regions for public sector workloads', TRUE),
+(20, 31, 5, 'GitHub Actions creates auditable deployment logs required for government change control', TRUE),
+(20, 36, 6, 'REST follows government API standards with versioning and OpenAPI documentation',         TRUE);
+
+-- Stack 21: Data Reporting System (profile_id=21, industry=government)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(21, 2,  1, 'Python processes open-data CSVs and generates statistical aggregations for reports',      TRUE),
+(21, 8,  2, 'React interactive charts let citizens explore datasets without downloading raw files',    TRUE),
+(21, 15, 3, 'PostgreSQL window functions and materialized views power fast aggregate report queries',  TRUE),
+(21, 22, 4, 'AWS GovCloud regions satisfy US government data-residency and compliance requirements',   TRUE),
+(21, 32, 5, 'Terraform provides auditable, version-controlled infrastructure for oversight reviews',   TRUE),
+(21, 36, 6, 'REST exposes public data APIs for journalists, researchers, and third-party apps',        TRUE);
+
+-- Stack 22: Project Management Platform (profile_id=22, industry=construction)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(22, 1,  1, 'Node.js real-time event bus syncs project updates across field and office teams',         TRUE),
+(22, 8,  2, 'React renders complex Gantt charts and resource allocation grids for project managers',   TRUE),
+(22, 15, 3, 'PostgreSQL models projects, tasks, resources, dependencies, and cost tracking',           TRUE),
+(22, 22, 4, 'AWS provides reliable cloud hosting accessible from office and site offices globally',    TRUE),
+(22, 29, 5, 'Docker enables on-premise deployment for sites with limited internet connectivity',       TRUE),
+(22, 36, 6, 'REST integrates with Procore, AutoCAD, and ERP systems used in construction workflows',  TRUE);
+
+-- Stack 23: Field Operations App (profile_id=23, industry=construction)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(23, 1,  1, 'Node.js sync API handles offline-first conflict resolution when field workers reconnect', TRUE),
+(23, 43, 8, 'React Native delivers a single native codebase for iOS and Android field workers',       TRUE),
+(23, 19, 3, 'SQLite stores inspection forms and punch list items locally during offline field work',   TRUE),
+(23, 22, 4, 'AWS S3 stores site photos and documents uploaded when connectivity is restored',          TRUE),
+(23, 31, 5, 'GitHub Actions automates mobile build and OTA update distribution to field devices',     TRUE),
+(23, 36, 6, 'REST provides the sync API endpoint for offline data reconciliation',                     TRUE);
+
+-- Stack 24: Investment Dashboard (profile_id=24, industry=finance)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(24, 2,  1, 'Python runs quantitative analysis, backtesting, and risk model computations',             TRUE),
+(24, 8,  2, 'React with D3 renders interactive portfolio charts and drill-down analytics',             TRUE),
+(24, 15, 3, 'PostgreSQL with TimescaleDB extension handles time-series price and return data',         TRUE),
+(24, 22, 4, 'AWS low-latency zones and dedicated links minimise market data feed delays',              TRUE),
+(24, 30, 5, 'Kubernetes maintains high availability during market hours with zero-downtime deploys',   TRUE),
+(24, 37, 6, 'GraphQL allows portfolio widgets to independently query specific metrics and date ranges',TRUE);
+
+-- Stack 25: Banking Mobile App (profile_id=25, industry=finance)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(25, 3,  1, 'Java Spring Boot is the enterprise banking backend standard with deep security tooling',  TRUE),
+(25, 43, 8, 'React Native provides one codebase for iOS and Android with native biometric auth',      TRUE),
+(25, 15, 3, 'PostgreSQL ACID transactions and row-level locking prevent double-processing payments',  TRUE),
+(25, 22, 4, 'AWS PCI DSS Level 1 infrastructure with VPC isolation and KMS key management',           TRUE),
+(25, 30, 5, 'Kubernetes maintains 99.99% availability for 24/7 banking with rolling updates',         TRUE),
+(25, 36, 6, 'REST supports Open Banking API standards and third-party payment provider integration',   TRUE);
+
+-- ============================================================
+-- ADDITIONAL MOBILE USAGE STATS — Stack Overflow Survey 2024
+-- Retrospective data for 2022-2024 from 2024 survey
+-- ============================================================
+
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, source) VALUES
+(43, NULL, 2022, 72.00, 'Stack Overflow Survey 2024'),
+(43, NULL, 2023, 76.00, 'Stack Overflow Survey 2024'),
+(43, NULL, 2024, 79.00, 'Stack Overflow Survey 2024');
+
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, source) VALUES
+(44, NULL, 2022, 42.00, 'Stack Overflow Survey 2024'),
+(44, NULL, 2023, 51.00, 'Stack Overflow Survey 2024'),
+(44, NULL, 2024, 58.00, 'Stack Overflow Survey 2024');
+
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, source) VALUES
+(45, NULL, 2022, 45.00, 'Stack Overflow Survey 2024'),
+(45, NULL, 2023, 43.00, 'Stack Overflow Survey 2024'),
+(45, NULL, 2024, 41.00, 'Stack Overflow Survey 2024');
+
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, source) VALUES
+(46, NULL, 2022, 31.00, 'Stack Overflow Survey 2024'),
+(46, NULL, 2023, 35.00, 'Stack Overflow Survey 2024'),
+(46, NULL, 2024, 38.00, 'Stack Overflow Survey 2024');
+
+-- ============================================================
 -- DEFAULT ADMIN USER (password: admin123 — bcrypt hash)
 -- Change immediately in production
 -- ============================================================

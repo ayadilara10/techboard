@@ -418,3 +418,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Industry selection cards ---- */
+.industry-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1.5rem;
+  cursor: pointer;
+}
+
+.industry-card-icon {
+  font-size: 2rem;
+}
+
+.industry-card-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.industry-card-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
