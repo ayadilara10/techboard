@@ -165,7 +165,7 @@
         var $card = $(this);
         setTimeout(function () {
           $card.addClass('category-card--visible');
-        }, i * 45);   /* 45 ms stagger between cards */
+        }, i * 70);   /* 70 ms stagger between cards — visible at 15-card scale */
       });
 
       /* ---- Step 5: populate trending strip ----

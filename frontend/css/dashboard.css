@@ -190,6 +190,12 @@
 .stat-item:first-child { padding-left: 0; }
 .stat-item:last-child  { padding-right: 0; }
 
+/* Subtle vertical float — numbers gently breathe up and down */
+@keyframes float-stat {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-5px); }
+}
+
 .stat-value {
   font-family: var(--font-mono);
   font-size: clamp(1.5rem, 3vw, 2rem);
@@ -198,7 +204,15 @@
   line-height: 1;
   min-width: 60px;
   text-align: center;
+  animation: float-stat 3.2s ease-in-out infinite;
 }
+
+/* Stagger each stat value so they ripple rather than move in unison.
+   Structure: stat-item(1) divider(2) stat-item(3) divider(4) stat-item(5) ... */
+.stats-ticker > .stat-item:nth-child(1) .stat-value { animation-delay: 0s;    }
+.stats-ticker > .stat-item:nth-child(3) .stat-value { animation-delay: 0.55s; }
+.stats-ticker > .stat-item:nth-child(5) .stat-value { animation-delay: 1.1s;  }
+.stats-ticker > .stat-item:nth-child(7) .stat-value { animation-delay: 1.65s; }
 
 .stat-label {
   font-size: 0.75rem;
