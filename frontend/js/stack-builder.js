@@ -139,25 +139,25 @@
   function renderIndustryStep() {
     var $grid = $('#industryGrid').empty().removeAttr('aria-busy');
 
-    /* Build one card per industry group */
+    /* Build one card per industry group using HTML string template */
     $.each(state.profiles, function (i, industryGroup) {
-      var icon  = INDUSTRY_ICONS[industryGroup.industry_slug] || '🏢';
-      var count = industryGroup.product_types.length;
-      var label = count === 1 ? '1 profile available' : count + ' profiles available';
+      var slug         = industryGroup.industry_slug;
+      var industryName = industryGroup.industry_name;
+      var icon         = INDUSTRY_ICONS[slug] || '🏢';
+      var count        = industryGroup.product_types.length;
 
-      /* Build the card element using jQuery DOM construction */
-      var $card = $('<article>', {
-        'class':       'builder-card industry-card',
-        'role':        'listitem',
-        'tabindex':    '0',
-        'aria-label':  industryGroup.industry_name,
-      });
+      var cardHtml =
+        '<div class="industry-card" ' +
+             'data-industry="' + escapeHtml(slug) + '" ' +
+             'role="listitem" tabindex="0" ' +
+             'aria-label="' + escapeHtml(industryName) + '">' +
+          '<div class="industry-card-icon">' + icon + '</div>' +
+          '<div class="industry-card-name">' + escapeHtml(industryName) + '</div>' +
+          '<div class="industry-card-count">' + count + ' profile' +
+            (count !== 1 ? 's' : '') + ' available</div>' +
+        '</div>';
 
-      $card.append(
-        $('<div>', { 'class': 'industry-card-icon', 'aria-hidden': 'true' }).text(icon),
-        $('<div>', { 'class': 'industry-card-name' }).text(industryGroup.industry_name),
-        $('<div>', { 'class': 'industry-card-count' }).text(label)
-      );
+      var $card = $(cardHtml);
 
       /* Click — advance to Step 2 */
       $card.on('click', function () {

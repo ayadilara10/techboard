@@ -50,6 +50,12 @@
     analytics:   '↗',
   };
 
+  /* ---- Ticker IntersectionObserver state ----
+   * Stats are fetched async; animation fires only when the ticker
+   * enters the viewport AND data has arrived. */
+  var _globalStats  = null;
+  var _tickerReady  = false;
+
   /* ============================================================
      ENTRY POINT
      ============================================================ */
@@ -58,9 +64,11 @@
    * We separate it into named functions for readability and testability. */
   $(document).ready(function () {
     renderSkeletons();      /* show placeholders immediately */
-    loadGlobalStats();      /* fill in hero ticker numbers */
+    loadGlobalStats();      /* fetch stats; animation fires via ticker observer */
+    initTickerObserver();   /* animate counts when .stats-ticker enters viewport */
     loadDashboard();        /* fetch categories + tools, build real cards */
     initSectionObserver();  /* scroll-reveal for section titles */
+    initParticles();        /* ambient particle canvas in the hero section */
   });
 
   /* ============================================================
@@ -97,20 +105,47 @@
      GLOBAL STATS — hero ticker
      ============================================================ */
 
-  /* loadGlobalStats fetches platform summary numbers and animates
-   * them counting up from 0 to their final value using jQuery.animate(). */
+  /* loadGlobalStats fetches platform summary numbers. Actual count animation
+   * is deferred to _runTickerAnimation, which fires only once the
+   * .stats-ticker element enters the viewport (via initTickerObserver). */
   async function loadGlobalStats() {
     try {
-      var stats = await API.getGlobalStats();
-      animateCount('#stat-tools',       stats.total_tools);
-      animateCount('#stat-industries',  stats.total_industries);
-      animateCount('#stat-datapoints',  stats.total_data_points);
-      animateCount('#stat-sources',     stats.data_sources);
+      var stats  = await API.getGlobalStats();
+      _globalStats = stats;
+      /* Ticker may already be in view before the API response arrives */
+      if (_tickerReady) { _runTickerAnimation(); }
     } catch (e) {
-      /* Backend is probably not running — show dashes and move on */
       console.warn('[dashboard] Global stats unavailable:', e.message);
       $('.stat-value').text('—');
     }
+  }
+
+  function _runTickerAnimation() {
+    if (!_globalStats) return;
+    animateCount('#stat-tools',       _globalStats.total_tools);
+    animateCount('#stat-industries',  _globalStats.total_industries);
+    animateCount('#stat-datapoints',  _globalStats.total_data_points);
+    animateCount('#stat-sources',     _globalStats.data_sources);
+  }
+
+  /* initTickerObserver — fires count animation when .stats-ticker enters
+   * the viewport at threshold 0.3 (30% visible). Unobserves after firing
+   * so the animation only plays once. */
+  function initTickerObserver() {
+    var ticker = document.querySelector('.stats-ticker');
+    if (!ticker) return;
+
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          _tickerReady = true;
+          if (_globalStats) { _runTickerAnimation(); }
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    obs.observe(ticker);
   }
 
   /* ============================================================
@@ -159,14 +194,21 @@
       });
 
       /* ---- Step 4: stagger the entrance animation ----
-       * Each card's CSS starts at opacity:0 translateY(16px).
+       * Each card's CSS starts at opacity:0 translateY(20px).
        * Adding category-card--visible triggers the CSS transition.
-       * We stagger with setTimeout so they fan in one-by-one. */
+       * We stagger with setTimeout so they fan in one-by-one.
+       * A short follow-up timeout then animates the usage bars. */
       $('.category-card').not('.category-card--skeleton').each(function (i) {
         var $card = $(this);
         setTimeout(function () {
           $card.addClass('category-card--visible');
-        }, i * 70);   /* 70 ms stagger between cards — visible at 15-card scale */
+          /* Animate usage bars after the card starts fading in */
+          setTimeout(function () {
+            $card.find('.usage-fill[data-fill]').each(function () {
+              $(this).css('width', $(this).data('fill'));
+            });
+          }, 150);
+        }, i * 70);   /* 70 ms stagger between cards */
       });
 
       /* ---- Step 5: populate trending strip ----
@@ -319,7 +361,7 @@
              'aria-valuemin="0" aria-valuemax="100" ' +
              'aria-label="' + escapeHtml(tool.name) + ' usage: ' + percent.toFixed(1) + '%">' +
           '<div class="usage-fill usage-fill--' + dir + '" ' +
-               'style="--fill-width: ' + fillPercent + '%">' +
+               'data-fill="' + fillPercent + '%">' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -468,7 +510,7 @@
           }
         });
       },
-      { rootMargin: '0px 0px -48px 0px', threshold: 0.05 }
+      { rootMargin: '0px 0px -48px 0px', threshold: 0.2 }
     );
 
     document.querySelectorAll('.section-title, .categories-section, .trending-section').forEach(function (el) {
@@ -490,6 +532,87 @@
       .replace(/>/g,  '&gt;')
       .replace(/"/g,  '&quot;')
       .replace(/'/g,  '&#039;');
+  }
+
+  /* ============================================================
+     PARTICLE BACKGROUND
+     18 faint cyan dots drift slowly across the hero section.
+     Dots within 120px are connected with a thin line.
+     Canvas fills the hero section height, not the full page.
+     ============================================================ */
+
+  function initParticles() {
+    var canvas = document.getElementById('heroParticles');
+    if (!canvas) return;
+
+    var hero = canvas.parentElement;  /* the .hero section */
+    if (!hero) return;
+
+    var ctx   = canvas.getContext('2d');
+    var dots  = [];
+    var N     = 18;        /* dot count */
+    var DIST  = 120;       /* connection threshold in px */
+
+    function resize() {
+      canvas.width  = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+
+    function makeDot() {
+      var angle = Math.random() * Math.PI * 2;
+      var speed = 0.2 + Math.random() * 0.2;   /* 0.2–0.4 px/frame */
+      return {
+        x:  Math.random() * canvas.width,
+        y:  Math.random() * canvas.height,
+        r:  1.5 + Math.random() * 1.5,          /* 1.5–3 px radius */
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+      };
+    }
+
+    resize();
+    for (var i = 0; i < N; i++) { dots.push(makeDot()); }
+
+    function frame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      /* Draw connection lines between nearby dots */
+      for (var i = 0; i < dots.length; i++) {
+        for (var j = i + 1; j < dots.length; j++) {
+          var dx = dots[i].x - dots[j].x;
+          var dy = dots[i].y - dots[j].y;
+          if (dx * dx + dy * dy < DIST * DIST) {
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = 'rgba(45,212,212,0.05)';
+            ctx.lineWidth   = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      /* Update positions and draw each dot */
+      dots.forEach(function (d) {
+        d.x += d.vx;
+        d.y += d.vy;
+        /* Wrap at edges for continuous drift */
+        if (d.x < 0)             d.x = canvas.width;
+        if (d.x > canvas.width)  d.x = 0;
+        if (d.y < 0)             d.y = canvas.height;
+        if (d.y > canvas.height) d.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(45,212,212,0.15)';
+        ctx.fill();
+      });
+
+      requestAnimationFrame(frame);
+    }
+
+    frame();
+    window.addEventListener('resize', resize);
   }
 
 }(jQuery));

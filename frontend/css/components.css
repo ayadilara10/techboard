@@ -9,8 +9,24 @@
    ============================================================ */
 
 @keyframes revealUp {
-  0%   { opacity: 0; transform: translateY(40px) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0)    scale(1);    }
+  0%   { opacity: 0; transform: translateY(32px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fillBar {
+  from { width: 0%; }
+  to   { width: var(--fill-width); }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: var(--border-color); box-shadow: none; }
+  50%       { border-color: rgba(45,212,212,0.4);
+              box-shadow: 0 4px 24px rgba(45,212,212,0.12); }
 }
 
 @keyframes glowPulse {
@@ -19,7 +35,7 @@
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
+  from { opacity: 0; transform: translateX(-16px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
@@ -235,9 +251,8 @@
 .usage-fill {
   height: 100%;
   border-radius: 999px;
-  /* Width is set via --fill-width CSS custom property */
-  width: var(--fill-width, 0%);
-  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   background: linear-gradient(90deg, var(--accent-primary), #1ba8a8);
 }
 
@@ -308,8 +323,9 @@
 
   /* Cards start invisible; dashboard.js adds --visible to trigger entrance */
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.2s ease;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease,
+              box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 /* Entrance animation state toggled by dashboard.js */
@@ -319,9 +335,9 @@
 }
 
 .category-card:hover:not(.category-card--muted) {
-  box-shadow: 0 8px 32px rgba(45, 212, 212, 0.15);
   transform: translateY(-4px);
-  animation: glowPulse 1.5s ease-in-out;
+  box-shadow: 0 8px 32px rgba(45, 212, 212, 0.14);
+  border-color: rgba(45, 212, 212, 0.35);
 }
 
 /* Muted state for coming-soon cards — slightly faded but still visible */
@@ -501,23 +517,24 @@
   padding: 8px var(--space-md);
   cursor: default;
   white-space: nowrap;
-  transition: transform 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
-  opacity: 0; /* animated in via slideInLeft nth-child rules below */
+  opacity: 0;
+  animation: slideInLeft 0.4s ease both;
 }
 
 .trending-chip:hover {
   transform: translateY(-2px);
   background: rgba(45, 212, 212, 0.1);
+  transition: transform 0.2s ease;
 }
 
-/* Staggered slideInLeft — CSS handles the fan-in so dashboard.js doesn't need jQuery animate */
-.trending-chip:nth-child(1) { animation: slideInLeft 0.4s 0.1s ease both; }
-.trending-chip:nth-child(2) { animation: slideInLeft 0.4s 0.2s ease both; }
-.trending-chip:nth-child(3) { animation: slideInLeft 0.4s 0.3s ease both; }
-.trending-chip:nth-child(4) { animation: slideInLeft 0.4s 0.4s ease both; }
-.trending-chip:nth-child(5) { animation: slideInLeft 0.4s 0.5s ease both; }
-.trending-chip:nth-child(6) { animation: slideInLeft 0.4s 0.6s ease both; }
+/* Stagger delays — fan chips in one by one */
+.trending-chip:nth-child(1) { animation-delay: 0.05s; }
+.trending-chip:nth-child(2) { animation-delay: 0.13s; }
+.trending-chip:nth-child(3) { animation-delay: 0.21s; }
+.trending-chip:nth-child(4) { animation-delay: 0.29s; }
+.trending-chip:nth-child(5) { animation-delay: 0.37s; }
+.trending-chip:nth-child(6) { animation-delay: 0.45s; }
 
 .trending-chip-icon {
   color: var(--color-rising);
@@ -601,8 +618,8 @@
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
 .section-title.is-visible {
@@ -617,7 +634,7 @@
   background: var(--bg-primary);
   z-index: 9999;
   pointer-events: none;
-  animation: pageReveal 0.4s ease 0.05s both;
+  animation: pageReveal 0.4s ease 0.3s both;
 }
 
 .section-subtitle {

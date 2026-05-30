@@ -421,27 +421,45 @@
 
 /* ---- Industry selection cards ---- */
 .industry-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 1.5rem;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 1.5rem !important;
   cursor: pointer;
+  min-height: 120px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  user-select: none;
+}
+
+.industry-card:hover,
+.industry-card:focus-visible {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  outline: none;
 }
 
 .industry-card-icon {
-  font-size: 2rem;
+  font-size: 2.2rem;
+  line-height: 1;
 }
 
 .industry-card-name {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   text-align: center;
+  display: block !important;
 }
 
 .industry-card-count {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.72rem;
+  color: var(--accent-secondary);
+  text-align: center;
+  display: block !important;
 }
