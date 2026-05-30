@@ -78,7 +78,7 @@ router.get('/top', async (req, res) => {
            AND t.is_active = 1
          ORDER BY us.usage_percent DESC
          LIMIT ?`,
-        [industrySlug, categorySlug, limit]
+        [industrySlug, categorySlug, parseInt(limit, 10)]
       );
 
     } else {
@@ -118,7 +118,7 @@ router.get('/top', async (req, res) => {
            AND t.is_active = 1
          ORDER BY us.usage_percent DESC
          LIMIT ?`,
-        [categorySlug, limit]
+        [categorySlug, parseInt(limit, 10)]
       );
     }
 
