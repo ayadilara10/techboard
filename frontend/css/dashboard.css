@@ -217,7 +217,7 @@
 .stat-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--color-gold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   white-space: nowrap;
@@ -229,6 +229,9 @@
   background-color: var(--border-color);
   flex-shrink: 0;
 }
+
+/* Gold accent utility — used for inline highlights in headings */
+.accent-gold { color: var(--color-gold); }
 
 /* ============================================================
    CATEGORIES SECTION

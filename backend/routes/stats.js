@@ -77,8 +77,8 @@ router.get('/top', async (req, res) => {
          WHERE c.slug     = ?
            AND t.is_active = 1
          ORDER BY us.usage_percent DESC
-         LIMIT ?`,
-        [industrySlug, categorySlug, parseInt(limit, 10)]
+         LIMIT ${limit}`,
+        [industrySlug, categorySlug]
       );
 
     } else {
@@ -117,8 +117,8 @@ router.get('/top', async (req, res) => {
          WHERE c.slug     = ?
            AND t.is_active = 1
          ORDER BY us.usage_percent DESC
-         LIMIT ?`,
-        [categorySlug, parseInt(limit, 10)]
+         LIMIT ${limit}`,
+        [categorySlug]
       );
     }
 

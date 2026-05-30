@@ -1,11 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="148" height="32" viewBox="0 0 148 32" role="img" aria-label="TechBoard">
-  <!-- Icon mark: circuit-node motif -->
-  <rect x="0" y="0" width="32" height="32" rx="8" fill="#2DD4D4" fill-opacity="0.12"/>
-  <rect x="4" y="8" width="18" height="3" rx="1.5" fill="#2DD4D4"/>
-  <rect x="13" y="11" width="3" height="13" rx="1.5" fill="#2DD4D4"/>
-  <rect x="4" y="17" width="9" height="3" rx="1.5" fill="#2DD4D4"/>
-  <rect x="4" y="21" width="9" height="3" rx="1.5" fill="#C5A572"/>
-  <circle cx="25" cy="21" r="3" fill="none" stroke="#2DD4D4" stroke-width="2"/>
-  <!-- Wordmark -->
-  <text x="40" y="22" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="700" letter-spacing="-0.3" fill="#D1D9E6">Tech<tspan fill="#2DD4D4">Board</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="160" height="36" fill="none" role="img" aria-label="TechBoard">
+
+  <!-- ============================================================
+       CIRCUIT-BOARD BRACKET MARK
+       Two L-shapes (top-left + bottom-left) in cyan form a frame.
+       Filled terminal dots at the outer corners anchor the mark.
+       Subtle internal tick marks add circuit-trace detail.
+       ============================================================ -->
+
+  <!-- Top L: horizontal bar across, then drop down -->
+  <path d="M2 5 H17 V14"
+        stroke="#2DD4D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Bottom L: rise up, then horizontal bar across -->
+  <path d="M17 22 V31 H2"
+        stroke="#2DD4D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Terminal dots at the outer corners of the bracket -->
+  <circle cx="2"  cy="5"  r="2.2" fill="#2DD4D4"/>
+  <circle cx="2"  cy="31" r="2.2" fill="#2DD4D4"/>
+
+  <!-- Centre connection dot on the vertical spine -->
+  <circle cx="17" cy="18" r="1.5" fill="#2DD4D4" opacity="0.65"/>
+
+  <!-- Short circuit-trace ticks branching off the spine — adds depth -->
+  <line x1="17" y1="10" x2="21" y2="10"
+        stroke="#2DD4D4" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+  <line x1="17" y1="26" x2="21" y2="26"
+        stroke="#2DD4D4" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- ============================================================
+       WORDMARK
+       "Tech" in near-white, "Board" in cyan.
+       System-UI stack used so the SVG renders correctly as <img>
+       without depending on an external font load.
+       ============================================================ -->
+  <text x="26" y="26"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="700" letter-spacing="-0.4"
+        fill="#D1D9E6">Tech</text>
+
+  <text x="70" y="26"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="700" letter-spacing="-0.4"
+        fill="#2DD4D4">Board</text>
+
 </svg>
