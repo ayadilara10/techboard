@@ -172,8 +172,7 @@
   color: var(--accent-primary);
   display: block;
   /* revealUp plays once; glowPulse starts after it finishes */
-  animation: revealUp 1s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both,
-             glowPulse 3s 1.15s ease-in-out infinite;
+  animation: revealUp 1s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-subtitle {
@@ -215,20 +214,18 @@
 .stat-item:last-child  { padding-right: 0; }
 
 /* Subtle vertical float — numbers gently breathe up and down */
-@keyframes float-stat {
   0%, 100% { transform: translateY(0);    }
   50%       { transform: translateY(-5px); }
 }
 
 .stat-value {
   font-family: var(--font-mono);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: 2.8rem;
   font-weight: 700;
   color: var(--accent-primary);
   line-height: 1;
   min-width: 60px;
   text-align: center;
-  animation: float-stat 3.2s ease-in-out infinite;
 }
 
 /* Stagger each stat value so they ripple rather than move in unison.

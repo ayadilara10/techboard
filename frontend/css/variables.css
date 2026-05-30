@@ -1,3 +1,4 @@
+/* Prevent font flash — fallback matches Cormorant proportions */
 /* ============================================================
    variables.css — TechBoard Design System Tokens
    All CSS custom properties live here.
@@ -29,7 +30,7 @@
   --accent-secondary: #C5A572;
 
   /* ---- TYPOGRAPHY ---- */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Cormorant Garamond', Georgia, Georgia, serif;
   --font-sans:    'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 

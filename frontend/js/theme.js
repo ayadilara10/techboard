@@ -54,12 +54,12 @@
 
     if (theme === LIGHT) {
       /* Sun icon signals we're in light mode; clicking returns to dark */
-      if (icon) icon.textContent = '☀';
+      if (icon) icon.innerHTML = '☀️';
       btn.setAttribute('aria-label', 'Switch to dark mode');
       btn.setAttribute('title', 'Switch to dark mode');
     } else {
       /* Moon icon signals dark mode; clicking switches to light */
-      if (icon) icon.textContent = '☾';
+      if (icon) icon.innerHTML = '🌙';
       btn.setAttribute('aria-label', 'Switch to light mode');
       btn.setAttribute('title', 'Switch to light mode');
     }

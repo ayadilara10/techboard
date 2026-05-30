@@ -251,7 +251,7 @@
 .usage-fill {
   height: 100%;
   border-radius: 999px;
-  width: 0%;
+  width: var(--fill-width, 0%);
   transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   background: linear-gradient(90deg, var(--accent-primary), #1ba8a8);
 }
@@ -628,17 +628,12 @@
 }
 
 /* Full-page overlay that fades out on load, hiding the initial render flash */
-.page-load-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-primary);
-  z-index: 9999;
-  pointer-events: none;
-  animation: pageReveal 0.4s ease 0.3s both;
-}
 
 .section-subtitle {
   color: var(--text-muted);
   font-size: 0.9rem;
   margin-bottom: 0;
 }
+
+.theme-toggle { color: var(--text-primary); background: none; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 6px 10px; cursor: pointer; font-size: 1rem; }
+.theme-toggle:hover { border-color: var(--accent-primary); }
