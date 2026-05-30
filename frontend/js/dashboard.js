@@ -393,17 +393,7 @@
     });
 
     $strip.html(html);
-
-    /* jQuery animation — chips slide in from the left, staggered */
-    $strip.find('.trending-chip').each(function (i) {
-      var $chip = $(this);
-      /* Start hidden and shifted left */
-      $chip.css({ opacity: 0, marginLeft: '-8px' });
-      /* Delay each chip slightly so they fan in one by one */
-      setTimeout(function () {
-        $chip.animate({ opacity: 1, marginLeft: '0px' }, 250);
-      }, i * 80);
-    });
+    /* Chip entrance is handled by CSS slideInLeft nth-child delays in components.css */
 
     /* Make chips clickable → navigate to category page if slug is available */
     $strip.find('.trending-chip').on('click', function () {
@@ -460,24 +450,28 @@
      ============================================================ */
 
   function initSectionObserver() {
-    /* IntersectionObserver fires when any observed element crosses the
-     * viewport threshold. rootMargin pulls the trigger 48px before the
-     * element fully enters, so the transition starts slightly early. */
+    /* Fire when element enters viewport; rootMargin triggers slightly early */
     var observer = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            $(entry.target).addClass('is-visible');
-            /* Stop observing once revealed — it only needs to animate in once */
+            /* Add is-visible to section titles to trigger revealUp via CSS */
+            var $el = $(entry.target);
+            if ($el.hasClass('section-title')) {
+              $el.addClass('is-visible');
+            }
+            /* Also reveal the section heading when its parent section enters */
+            if ($el.is('.categories-section, .trending-section')) {
+              $el.find('.section-title').addClass('is-visible');
+            }
             observer.unobserve(entry.target);
           }
         });
       },
-      { rootMargin: '0px 0px -48px 0px', threshold: 0.1 }
+      { rootMargin: '0px 0px -48px 0px', threshold: 0.05 }
     );
 
-    /* Observe every section title on the page */
-    document.querySelectorAll('.section-title').forEach(function (el) {
+    document.querySelectorAll('.section-title, .categories-section, .trending-section').forEach(function (el) {
       observer.observe(el);
     });
   }

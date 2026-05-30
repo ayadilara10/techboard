@@ -248,6 +248,48 @@
     $('#stackTitle').text(stack.profile.product_type + ' Stack');
     $('#stackDescription').text(stack.profile.description || '');
 
+    /* ---- "Why this stack?" explanation ---- */
+    $('#stackWhyExplainer').remove();
+    var industryName = state.selectedIndustry.industry_name;
+    var productType  = state.selectedType.product_type;
+    var rationaleList = stack.tools
+      .filter(function (t) { return t.rationale; })
+      .map(function (t)    { return t.category_name + ': ' + t.rationale; });
+
+    var whyHtml =
+      '<div id="stackWhyExplainer" class="stack-why-box">' +
+        '<h3 class="stack-why-title">Why this stack?</h3>' +
+        '<p class="stack-why-intro">This recommendation is optimised for ' +
+          escapeHtml(productType) + ' in the ' + escapeHtml(industryName) +
+          ' industry, based on real adoption data from 65,000+ developers.' +
+          (stack.profile.description ? ' ' + escapeHtml(stack.profile.description) : '') +
+        '</p>' +
+      '</div>';
+
+    $('#stackTitle').after(whyHtml);
+
+    /* ---- Summary table (category | tool | rationale) ---- */
+    $('#stackSummaryTable').remove();
+    var tableRows = stack.tools.map(function (tool) {
+      return '<tr>' +
+        '<td class="stack-table-category">' + escapeHtml(tool.category_name) + '</td>' +
+        '<td class="stack-table-tool"><strong>' + escapeHtml(tool.tool_name) + '</strong></td>' +
+        '<td class="stack-table-rationale">' + escapeHtml(tool.rationale || '—') + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var tableHtml =
+      '<div id="stackSummaryTable" class="stack-summary-table-wrap">' +
+        '<table class="stack-summary-table">' +
+          '<thead><tr>' +
+            '<th>Category</th><th>Recommended Tool</th><th>Why</th>' +
+          '</tr></thead>' +
+          '<tbody>' + tableRows + '</tbody>' +
+        '</table>' +
+      '</div>';
+
+    $('#stackWhyExplainer').after(tableHtml);
+
     /* Build tool cards */
     var $grid = $('#stackGrid').empty();
 
@@ -472,6 +514,15 @@
         $('<p>').text(message)
       )
     );
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g,  '&amp;')
+      .replace(/</g,  '&lt;')
+      .replace(/>/g,  '&gt;')
+      .replace(/"/g,  '&quot;')
+      .replace(/'/g,  '&#039;');
   }
 
 }(jQuery));

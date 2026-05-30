@@ -8,19 +8,29 @@
    KEYFRAME ANIMATIONS
    ============================================================ */
 
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes revealUp {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(45, 212, 212, 0);   }
+  50%       { text-shadow: 0 0 40px rgba(45, 212, 212, 0.4); }
 }
 
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: var(--border-color); }
+  50%       { border-color: rgba(45, 212, 212, 0.5); }
+}
+
+@keyframes pageReveal {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
 /* ============================================================
@@ -277,6 +287,7 @@
 .category-card:hover:not(.category-card--muted) {
   box-shadow: 0 8px 32px rgba(45, 212, 212, 0.15);
   transform: translateY(-4px);
+  animation: borderGlow 1.5s ease-in-out;
 }
 
 /* Muted state for coming-soon cards — slightly faded but still visible */
@@ -357,16 +368,26 @@
    Absolutely positioned over the card content, blurs it out.
    ============================================================ */
 
+/* Card header must always be visible above the overlay */
+.category-card--muted .card-header {
+  position: relative;
+  z-index: calc(var(--z-overlay) + 1);
+}
+
 .coming-soon-overlay {
   position: absolute;
-  inset: 0;
+  /* Start below the card header: top padding + icon height + gap */
+  top: calc(var(--space-lg) + 44px + var(--space-md));
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 31, 51, 0.82);
+  background: rgba(10, 31, 51, 0.88);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
-  border-radius: inherit;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   z-index: var(--z-overlay);
 }
 
@@ -449,12 +470,21 @@
   white-space: nowrap;
   transition: transform 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
+  opacity: 0; /* animated in via slideInLeft nth-child rules below */
 }
 
 .trending-chip:hover {
   transform: translateY(-2px);
   background: rgba(45, 212, 212, 0.1);
 }
+
+/* Staggered slideInLeft — CSS handles the fan-in so dashboard.js doesn't need jQuery animate */
+.trending-chip:nth-child(1) { animation: slideInLeft 0.4s 0.00s ease both; }
+.trending-chip:nth-child(2) { animation: slideInLeft 0.4s 0.08s ease both; }
+.trending-chip:nth-child(3) { animation: slideInLeft 0.4s 0.16s ease both; }
+.trending-chip:nth-child(4) { animation: slideInLeft 0.4s 0.24s ease both; }
+.trending-chip:nth-child(5) { animation: slideInLeft 0.4s 0.32s ease both; }
+.trending-chip:nth-child(6) { animation: slideInLeft 0.4s 0.40s ease both; }
 
 .trending-chip-icon {
   color: var(--color-rising);
@@ -538,13 +568,20 @@
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .section-title.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: revealUp 0.6s 0.1s ease both;
+}
+
+/* Full-page overlay that fades out on load, hiding the initial render flash */
+.page-load-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  z-index: 9999;
+  pointer-events: none;
+  animation: pageReveal 0.4s ease 0.05s both;
 }
 
 .section-subtitle {

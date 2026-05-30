@@ -997,6 +997,44 @@ INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction
 (42, 3, 2023, 52.60, 4.1, 9500, 'Stack Overflow Survey 2023'),
 (42, 3, 2024, 57.10, 4.2, 7200, 'Stack Overflow Survey 2024');
 
+-- ---- MOBILE (category_id = 8) --------------------------------
+INSERT INTO tools (category_id, slug, name, description, website_url, open_source, first_released) VALUES
+(8, 'react-native', 'React Native', 'Cross-platform mobile framework using React and native components',   'https://reactnative.dev',  TRUE,  2015),
+(8, 'flutter',      'Flutter',      'Google UI toolkit for building natively compiled mobile apps',         'https://flutter.dev',      TRUE,  2018),
+(8, 'swift',        'Swift',        'Apple\'s general-purpose language for iOS and macOS development',      'https://swift.org',        TRUE,  2014),
+(8, 'kotlin',       'Kotlin',       'Modern language for Android development, officially endorsed by Google','https://kotlinlang.org',  TRUE,  2016),
+(8, 'xamarin',      'Xamarin',      'Microsoft platform for building mobile apps with .NET and C#',         'https://dotnet.microsoft.com/apps/xamarin', TRUE, 2011);
+
+-- React Native — global
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source) VALUES
+(43, NULL, 2022, 64.10, 4.1, 71000, 'Stack Overflow Survey 2022'),
+(43, NULL, 2023, 68.30, 4.2, 89000, 'Stack Overflow Survey 2023'),
+(43, NULL, 2024, 72.00, 4.2, 65000, 'Stack Overflow Survey 2024');
+
+-- Flutter — global
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source) VALUES
+(44, NULL, 2022, 42.00, 4.4, 71000, 'Stack Overflow Survey 2022'),
+(44, NULL, 2023, 50.10, 4.5, 89000, 'Stack Overflow Survey 2023'),
+(44, NULL, 2024, 58.00, 4.5, 65000, 'Stack Overflow Survey 2024');
+
+-- Swift — global
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source) VALUES
+(45, NULL, 2022, 36.20, 4.3, 71000, 'Stack Overflow Survey 2022'),
+(45, NULL, 2023, 38.60, 4.3, 89000, 'Stack Overflow Survey 2023'),
+(45, NULL, 2024, 41.00, 4.4, 65000, 'Stack Overflow Survey 2024');
+
+-- Kotlin — global
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source) VALUES
+(46, NULL, 2022, 32.10, 4.2, 71000, 'Stack Overflow Survey 2022'),
+(46, NULL, 2023, 35.20, 4.3, 89000, 'Stack Overflow Survey 2023'),
+(46, NULL, 2024, 38.00, 4.3, 65000, 'Stack Overflow Survey 2024');
+
+-- Xamarin — global
+INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, satisfaction, sample_size, source) VALUES
+(47, NULL, 2022, 18.40, 3.2, 71000, 'Stack Overflow Survey 2022'),
+(47, NULL, 2023, 15.10, 3.1, 89000, 'Stack Overflow Survey 2023'),
+(47, NULL, 2024, 12.00, 3.0, 65000, 'Stack Overflow Survey 2024');
+
 -- ============================================================
 -- TRENDS (pre-computed seed values for demo)
 -- Positive trend_score = rising, negative = falling
@@ -1062,17 +1100,30 @@ INSERT INTO trends (tool_id, industry_id, trend_score, trend_direction, year_fro
 (41, NULL, 4.55,  'rising',  2022, 2024),  -- OpenAPI rising strongly
 (42, NULL, 3.15,  'rising',  2022, 2024);  -- Webhooks rising
 
+-- Mobile trends (global)
+INSERT INTO trends (tool_id, industry_id, trend_score, trend_direction, year_from, year_to) VALUES
+(43, NULL, 4.00,  'rising',  2022, 2024),  -- React Native rising
+(44, NULL, 8.00,  'rising',  2022, 2024),  -- Flutter rising very fast
+(45, NULL, 2.50,  'rising',  2022, 2024),  -- Swift rising
+(46, NULL, 3.00,  'rising',  2022, 2024),  -- Kotlin rising
+(47, NULL, -3.20, 'falling', 2022, 2024);  -- Xamarin declining
+
 -- ============================================================
 -- STACK PROFILES — sample stacks for Tech Stack Builder
 -- ============================================================
 
 INSERT INTO stack_profiles (industry_id, product_type, description, is_published) VALUES
-(3, 'Mobile Banking App',   'Secure, high-performance stack for mobile-first banking applications',    TRUE),
-(2, 'SaaS Dashboard',       'Scalable web application stack for B2B SaaS products',                   TRUE),
-(1, 'E-Commerce Store',     'Full-featured online store with real-time inventory and payments',        TRUE);
+(3, 'Mobile Banking App',     'Secure, high-performance stack for mobile-first banking applications',    TRUE),
+(2, 'SaaS Dashboard',         'Scalable web application stack for B2B SaaS products',                   TRUE),
+(1, 'E-Commerce Store',       'Full-featured online store with real-time inventory and payments',        TRUE),
+(3, 'Payment Gateway',        'High-throughput, PCI-compliant payment processing infrastructure',        TRUE),
+(3, 'Trading Platform',       'Low-latency data pipeline and UI for real-time financial trading',        TRUE),
+(2, 'Customer Support Tool',  'Real-time ticketing and chat platform for SaaS customer success teams',   TRUE),
+(2, 'Analytics Dashboard',    'Data-heavy reporting platform with complex queries and visualisations',   TRUE),
+(1, 'Marketplace Platform',   'Multi-vendor marketplace with listings, payments, and seller management', TRUE),
+(1, 'Subscription Box',       'Recurring-order e-commerce with billing, inventory, and fulfilment',      TRUE);
 
--- Stack: Mobile Banking App (profile_id=1, industry=fintech)
--- backend=Node.js(1), frontend=React(8), db=PostgreSQL(15), cloud=AWS(22), devops=Docker(29), api=REST(36)
+-- Stack 1: Mobile Banking App (profile_id=1, industry=fintech)
 INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
 (1, 1,  1, 'Node.js handles high-throughput async operations ideal for real-time banking transactions', TRUE),
 (1, 8,  2, 'React provides the component architecture needed for complex financial dashboards',         TRUE),
@@ -1081,7 +1132,7 @@ INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is
 (1, 29, 5, 'Docker ensures consistent environments across development and regulated production',       TRUE),
 (1, 36, 6, 'REST remains the standard for banking APIs due to broad support and auditing tooling',    TRUE);
 
--- Stack: SaaS Dashboard (profile_id=2, industry=saas)
+-- Stack 2: SaaS Dashboard (profile_id=2, industry=saas)
 INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
 (2, 1,  1, 'Node.js excels at serving many concurrent dashboard users with low latency',              TRUE),
 (2, 12, 2, 'Next.js SSR improves time-to-first-paint for SaaS dashboards and helps with SEO',        TRUE),
@@ -1090,7 +1141,7 @@ INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is
 (2, 31, 5, 'GitHub Actions integrates directly into code review workflow for fast CI/CD',             TRUE),
 (2, 37, 6, 'GraphQL lets dashboard clients request exactly the data fields they need',                TRUE);
 
--- Stack: E-Commerce Store (profile_id=3, industry=ecommerce)
+-- Stack 3: E-Commerce Store (profile_id=3, industry=ecommerce)
 INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
 (3, 1,  1, 'Node.js handles the async nature of product catalog, cart, and payment flows',            TRUE),
 (3, 12, 2, 'Next.js SSG and ISR provide fast page loads critical for e-commerce conversion rates',    TRUE),
@@ -1098,6 +1149,60 @@ INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is
 (3, 22, 4, 'AWS S3, CloudFront, and Lambda provide scalable infrastructure for traffic spikes',       TRUE),
 (3, 31, 5, 'GitHub Actions automates testing and deployment on every product catalog update',         TRUE),
 (3, 42, 6, 'Webhooks power real-time payment notifications, inventory updates, and order events',     TRUE);
+
+-- Stack 4: Payment Gateway (profile_id=4, industry=fintech)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(4, 1,  1, 'Node.js event loop handles thousands of concurrent payment requests without blocking',     TRUE),
+(4, 8,  2, 'React enables smooth checkout flows with real-time validation feedback',                   TRUE),
+(4, 15, 3, 'PostgreSQL transactions and row-level locking prevent double-charges under concurrency',   TRUE),
+(4, 22, 4, 'AWS provides PCI DSS-compliant infrastructure with VPC isolation and KMS encryption',     TRUE),
+(4, 30, 5, 'Kubernetes auto-scales payment workers during peak transaction periods',                   TRUE),
+(4, 41, 6, 'OpenAPI specification ensures payment endpoints are auditable and well-documented',        TRUE);
+
+-- Stack 5: Trading Platform (profile_id=5, industry=fintech)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(5, 2,  1, 'Python drives the data pipeline and algorithmic logic with NumPy and pandas',              TRUE),
+(5, 8,  2, 'React with lightweight charting libraries renders tick-by-tick price data efficiently',    TRUE),
+(5, 15, 3, 'PostgreSQL with TimescaleDB extension handles time-series price and order book data',      TRUE),
+(5, 22, 4, 'AWS EC2 instances in low-latency availability zones minimise order execution delays',      TRUE),
+(5, 30, 5, 'Kubernetes orchestrates separate services for market data, order routing, and risk',       TRUE),
+(5, 38, 6, 'gRPC provides the low-latency binary protocol required for high-frequency order flow',     TRUE);
+
+-- Stack 6: Customer Support Tool (profile_id=6, industry=saas)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(6, 1,  1, 'Node.js powers the real-time event bus that routes tickets and chat messages',             TRUE),
+(6, 9,  2, 'Vue.js reactive data binding keeps the support queue UI in sync without full reloads',    TRUE),
+(6, 15, 3, 'PostgreSQL stores ticket history with full-text search for knowledge base lookups',        TRUE),
+(6, 24, 4, 'GCP Pub/Sub and Cloud Run provide serverless, event-driven message routing',               TRUE),
+(6, 31, 5, 'GitHub Actions runs automated regression tests on every deployment',                       TRUE),
+(6, 39, 6, 'WebSockets enable real-time chat between agents and customers with sub-second delivery',   TRUE);
+
+-- Stack 7: Analytics Dashboard (profile_id=7, industry=saas)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(7, 2,  1, 'Python handles ETL pipelines and statistical aggregations before serving to the API',      TRUE),
+(7, 8,  2, 'React with Chart.js and D3 renders interactive drill-down charts efficiently',             TRUE),
+(7, 15, 3, 'PostgreSQL window functions and materialized views make complex report queries fast',      TRUE),
+(7, 24, 4, 'GCP BigQuery handles petabyte-scale analytical queries behind the report API',             TRUE),
+(7, 32, 5, 'Terraform provisions consistent analytics infrastructure across staging and production',   TRUE),
+(7, 37, 6, 'GraphQL allows dashboard widgets to independently fetch only the metrics they display',    TRUE);
+
+-- Stack 8: Marketplace Platform (profile_id=8, industry=ecommerce)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(8, 1,  1, 'Node.js microservices isolate seller, buyer, and payment domains independently',           TRUE),
+(8, 12, 2, 'Next.js ISR regenerates seller listing pages on-demand without full rebuilds',            TRUE),
+(8, 15, 3, 'PostgreSQL handles the complex relational model of sellers, listings, and orders',         TRUE),
+(8, 22, 4, 'AWS manages image storage (S3), CDN (CloudFront), and serverless functions (Lambda)',      TRUE),
+(8, 31, 5, 'GitHub Actions runs seller onboarding integration tests on every merge',                   TRUE),
+(8, 37, 6, 'GraphQL lets buyer and seller apps fetch tailored views of the same data model',           TRUE);
+
+-- Stack 9: Subscription Box (profile_id=9, industry=ecommerce)
+INSERT INTO stack_profile_tools (profile_id, tool_id, category_id, rationale, is_primary) VALUES
+(9, 1,  1, 'Node.js manages the recurring billing scheduler and fulfilment event queue',               TRUE),
+(9, 8,  2, 'React powers the subscription management portal where customers edit their boxes',         TRUE),
+(9, 16, 3, 'MySQL reliably handles subscription plans, billing cycles, and shipment records',          TRUE),
+(9, 22, 4, 'AWS SQS queues fulfilment jobs so warehouse systems process orders asynchronously',        TRUE),
+(9, 29, 5, 'Docker containers isolate the billing service from the storefront for independent deploys',TRUE),
+(9, 42, 6, 'Webhooks notify the warehouse, carrier, and customer at each fulfilment milestone',        TRUE);
 
 -- ============================================================
 -- DEFAULT ADMIN USER (password: admin123 — bcrypt hash)

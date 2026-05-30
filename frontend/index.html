@@ -46,6 +46,9 @@
 
 <body>
 
+  <!-- Full-page overlay fades out in 0.4s on load to prevent render flash -->
+  <div class="page-load-overlay" aria-hidden="true"></div>
+
   <!-- ============================================================
        SITE HEADER
        Sticky top bar: logo, nav links, theme toggle
@@ -94,7 +97,7 @@
       <div class="container">
 
         <h1 class="hero-title" id="hero-heading">
-          Tech Stack Intelligence<br>
+          <span class="hero-title-main">Tech Stack Intelligence</span>
           <span class="hero-accent-italic">for Product Builders</span>
         </h1>
 
