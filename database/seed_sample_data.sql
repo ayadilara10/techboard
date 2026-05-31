@@ -1401,4 +1401,4 @@ INSERT INTO usage_stats (tool_id, industry_id, year, usage_percent, source) VALU
 -- Change immediately in production
 -- ============================================================
 INSERT INTO admin_users (email, password_hash, name) VALUES
-('admin@techboard.dev', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQyCgI7e5Ky4K1FBl.WLpqJCu', 'TechBoard Admin');
+('admin@techboard.dev', '$2y$10$SmScyn0dFgV2UZmGvOVhtuxxLUYxeH2pWI37eFTGPeZfPg8VUYljq', 'TechBoard Admin');
