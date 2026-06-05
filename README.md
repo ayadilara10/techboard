@@ -4,11 +4,13 @@
 
 ---
 
-## What It Does
+## Why TechBoard Exists
 
-TechBoard aggregates adoption data from the industry's most authoritative developer surveys — Stack Overflow Annual Survey, State of JS, and JetBrains Developer Ecosystem — and presents it as an interactive intelligence dashboard. Users can explore tool adoption by category and industry, view historical usage trends, compare technologies side by side, and generate recommended tech stacks for their use case.
+There is no universally correct tech stack. The right tool depends on your industry, your use case, and what you are actually building. Optimization is not about finding the best tool in the abstract — it is about finding the right tool for your specific context.
 
-The system is not opinion-based. Every percentage, every trend score, every ranking reflects actual survey responses from working developers.
+The problem is that researching that context is hard. Information is scattered across surveys, blog posts, and Reddit threads, none of it organized by industry or use case. TechBoard pulls that data into one place. It uses real adoption numbers from Stack Overflow, State of JS, and JetBrains developer surveys to show which tools developers are actually using — broken down by category and industry. It does not tell you what to use. It gives you the data to consult and make that decision yourself.
+
+The roadmap includes direct tool comparisons, capability breakdowns, and trade-off analysis — expanding it from adoption trends into a fuller reference for anyone who wants to understand the technology landscape before making a decision.
 
 ---
 
