@@ -1,282 +1,159 @@
-# TechBoard — Tech Integration Intelligence Board
+# TechBoard
+> A data-backed reference showing which technologies developers actually adopt, broken down by category and industry — so a technology choice can be made against real evidence instead of opinion.
 
-> A full-stack web platform that tracks which technical tools and infrastructure decisions companies are actually adopting. Built as deployable research infrastructure backed by real developer survey data.
+**Stack:** Node.js/Express · MySQL · Flask · PHP · nginx · Docker · **Status:** Functional prototype (local)
 
----
+## Problem
 
-## Why TechBoard Exists
+There is no universally correct tech stack. The right tool depends on industry, use case, and what is actually being built. The context needed to make that call is scattered across surveys, blog posts, and forum threads, none of it organized by industry or use case.
 
-There is no universally correct tech stack. The right tool depends on your industry, your use case, and what you are actually building. Optimization is not about finding the best tool in the abstract — it is about finding the right tool for your specific context.
+TechBoard consolidates that context. It draws on real adoption numbers from Stack Overflow, State of JS, and JetBrains developer surveys and organizes them by category and industry. It does not prescribe a stack — it surfaces the evidence and leaves the decision to the user.
 
-The problem is that researching that context is hard. Information is scattered across surveys, blog posts, and Reddit threads, none of it organized by industry or use case. TechBoard pulls that data into one place. It uses real adoption numbers from Stack Overflow, State of JS, and JetBrains developer surveys to show which tools developers are actually using — broken down by category and industry. It does not tell you what to use. It gives you the data to consult and make that decision yourself.
+The outcome it targets: a developer reaches a technology decision backed by adoption data rather than anecdote.
 
-The roadmap includes direct tool comparisons, capability breakdowns, and trade-off analysis — expanding it from adoption trends into a fuller reference for anyone who wants to understand the technology landscape before making a decision.
+## Overview
 
----
+A full-stack platform of five containerized services. A public dashboard presents adoption data by category and industry; a stack-builder recommends a starting stack for a given industry and product type; an intelligence service scores trends and compares tools; an admin panel manages the underlying data.
 
-## Architecture
+## Data
 
-```
-                        ┌─────────────────────────────────────────────┐
-                        │              Docker Network                  │
-                        │                                              │
-  Browser               │  ┌──────────────┐     ┌──────────────────┐  │
-     │                  │  │   Frontend   │     │     Backend      │  │
-     │  HTTP :80        │  │   nginx      │────▶│   Node.js/       │  │
-     └─────────────────▶│  │   Alpine     │     │   Express        │  │
-                        │  │              │     │   :3000          │  │
-  Admin Browser         │  └──────────────┘     └────────┬─────────┘  │
-     │                  │                                │             │
-     │  HTTP :8080      │  ┌──────────────┐             │  SQL        │
-     └─────────────────▶│  │    Admin     │      ┌──────▼──────────┐  │
-                        │  │   PHP 8.2/   │─────▶│     MySQL       │  │
-                        │  │   Apache     │      │     8.0         │  │
-                        │  │   :8080      │      │     :3306       │  │
-                        │  └──────────────┘      └──────▲──────────┘  │
-                        │                               │  SQL        │
-                        │  ┌──────────────┐             │             │
-                        │  │ Intelligence │─────────────┘             │
-                        │  │  Flask/      │                           │
-                        │  │  Python      │◀──── Node calls Flask     │
-                        │  │  :5001       │      internally via HTTP  │
-                        │  └──────────────┘                           │
-                        └─────────────────────────────────────────────┘
-```
+Three developer surveys, seeded into an 8-table relational schema as adoption percentages per tool, per category, over time.
 
-**Request flow:**
-1. Browser → nginx (port 80) → serves static HTML/CSS/JS
-2. JS fetch/jQuery AJAX → nginx reverse proxy → Node.js API (port 3000)
-3. Node.js → MySQL for all CRUD and stat queries
-4. Node.js → Flask (port 5001) for trend analysis and pattern detection
-5. Flask → MySQL independently for analytical queries
-6. Admin browser → PHP panel (port 8080) → MySQL directly via PDO
+| Survey | Publisher | Respondents | Used for |
+| --- | --- | --- | --- |
+| Stack Overflow Annual Developer Survey | Stack Overflow | ~90,000/year | Broad technology adoption |
+| State of JS | Sacha Greif et al. | ~30,000/year | JavaScript ecosystem |
+| JetBrains Developer Ecosystem Survey | JetBrains | ~26,000/year | DevOps, backend, tooling |
 
----
+Current data is a static seed. Live ingestion is scoped under Roadmap.
 
-## Tech Stack
+## Method
 
-| Technology | Version | Role | Why |
-|---|---|---|---|
-| **Node.js / Express** | 18+ / 4.x | REST API backend | Non-blocking I/O ideal for a data-heavy API; large ecosystem |
-| **MySQL** | 8.0 | Primary relational database | Structured survey data maps naturally to relational tables; FOREIGN KEY integrity |
-| **Python / Flask** | 3.11+ / 3.x | Intelligence microservice — trend analysis, pattern detection, comparisons | Python's data ecosystem fits analytical work; Flask is lightweight |
-| **PHP 8.2 / Apache** | 8.2 | Admin panel — tool/data management | Server-side scripting; PDO for safe parameterised queries |
-| **nginx (Alpine)** | latest | Frontend static file server + API reverse proxy | Efficient static serving; reverse proxy eliminates CORS issues in production |
-| **Docker / Compose** | 3.8 | Container orchestration — runs all 5 services with one command | Reproducible environments; no "works on my machine" problems |
-| **Vanilla JS + jQuery** | ES6+ / 3.x | Frontend interactivity and DOM manipulation | Direct DOM control; jQuery for AJAX and dynamic content |
-| **Chart.js** | 4.x | Usage-over-time charts | Lightweight, integrates cleanly with JSON API responses |
-| **HTML5 / CSS3** | — | Semantic markup, responsive layout, dark/light mode | Native web standards; CSS custom properties for theme switching |
-| **JWT** | — | Admin authentication on protected API routes | Stateless auth — no server-side sessions needed |
-| **XML** | — | Data export feed and import processing | Standard data interchange format |
-
----
-
-## Prerequisites
-
-- **Docker Desktop** with WSL2 backend enabled (Windows) or Docker Engine (Linux/macOS)
-- **Git**
-- No local Node.js, Python, or PHP installation required — Docker handles everything
-
----
-
-## Setup & Run
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/techboard.git
-cd techboard
-```
-
-### 2. Create your environment file
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and fill in all values:
-
-```env
-DB_ROOT_PASSWORD=your_root_password
-DB_USER=techboard_user
-DB_PASSWORD=your_db_password
-JWT_SECRET=your_jwt_secret_min_32_chars
-ADMIN_SECRET=your_admin_secret
-```
-
-### 3. Build and start all services
-
-```bash
-docker compose up --build
-```
-
-Docker will build all images, run the database seed files, and wait for MySQL to be healthy before starting the API and admin panel. First build takes 2–4 minutes.
-
-### 4. Verify everything is running
-
-```bash
-docker compose ps
-```
-
-All five containers should show `Up` or `healthy`.
-
-### 5. Open the application
-
-| Service | URL |
-|---|---|
-| **Dashboard** | http://localhost |
-| **Admin Panel** | http://localhost:8080 |
-| **API** | http://localhost:3000 |
-| **API Health** | http://localhost:3000/health |
-| **Flask Health** | http://localhost:5001/intelligence/health |
-
-### Useful commands
-
-```bash
-docker compose up -d               # run in background
-docker compose logs -f backend     # follow Node.js logs
-docker compose down                # stop (keeps data)
-docker compose down -v             # stop and wipe database
-docker compose exec mysql mysql -u root -p techboard   # MySQL shell
-```
-
----
-
-## API Endpoints
-
-### Public
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/categories` | All 15 technical categories |
-| `GET` | `/api/categories/:slug` | Single category detail |
-| `GET` | `/api/tools` | All active tools |
-| `GET` | `/api/tools/:slug` | Single tool detail |
-| `GET` | `/api/industries` | All 10 industry filters |
-| `GET` | `/api/stats/top` | Top N tools in a category; optional `?industry=` filter |
-| `GET` | `/api/stats/global` | Platform-wide summary counts |
-| `GET` | `/api/stats/usage` | Historical usage % for one tool — Chart.js data |
-| `GET` | `/api/trends` | Trend scores from Flask intelligence engine |
-| `GET` | `/api/stack-builder` | Recommended stack for a given industry and product type |
-| `GET` | `/feed.xml` | Full data export as XML |
-| `GET` | `/health` | API liveness probe |
-
-### Intelligence Engine (Flask — port 5001)
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/intelligence/health` | Flask + MySQL connectivity check |
-| `GET` | `/intelligence/trends` | Trend scores with direction (rising / stable / falling) |
-| `GET` | `/intelligence/rising` | Tools with the strongest upward trend |
-| `GET` | `/intelligence/patterns` | Cross-category adoption patterns |
-| `GET` | `/intelligence/compare` | Side-by-side comparison of two tools |
-
-### Admin (JWT required)
-
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/auth/login` | Authenticate and receive JWT |
-| `POST` | `/api/stats` | Manually insert a usage stat row |
-
----
-
-## Folder Structure
+Five services, each with a real, non-trivial role — no technology included to tick a box.
 
 ```
-techboard/
-├── docker-compose.yml
-├── .env.example
-├── .gitignore
-│
-├── database/
-│   ├── schema.sql              # 8-table schema
-│   ├── seed_categories.sql
-│   ├── seed_industries.sql
-│   └── seed_sample_data.sql
-│
-├── backend/                    # Node.js / Express
-│   ├── server.js
-│   ├── config/
-│   ├── middleware/
-│   ├── routes/
-│   └── utils/
-│
-├── frontend/                   # Static files (nginx)
-│   ├── index.html              # Dashboard
-│   ├── category.html
-│   ├── stack-builder.html
-│   ├── css/
-│   ├── js/
-│   └── nginx.conf
-│
-├── admin/                      # PHP 8.2 admin panel
-│   ├── index.php
-│   ├── login.php
-│   ├── includes/
-│   ├── tools/
-│   └── import/
-│
-├── intelligence/               # Python / Flask
-│   ├── app.py
-│   ├── db.py
-│   ├── routes/
-│   └── analysis/
-│
-└── screenshots/
+                      ┌─────────────────────────────────────────────┐
+                      │              Docker Network                  │
+Browser               │  ┌──────────────┐     ┌──────────────────┐  │
+   │  HTTP :80        │  │  Frontend    │────▶│   Backend        │  │
+   └─────────────────▶│  │  nginx       │     │   Node/Express   │  │
+                      │  └──────────────┘     └────────┬─────────┘  │
+Admin :8080           │  ┌──────────────┐              │ SQL        │
+   └─────────────────▶│  │  Admin PHP   │─────────┐    ▼            │
+                      │  └──────────────┘     ┌────▼─────────────┐  │
+                      │  ┌──────────────┐     │   MySQL 8.0      │  │
+                      │  │ Intelligence │────▶│                 │  │
+                      │  │ Flask :5001  │     └──────────────────┘  │
+                      │  └──────────────┘                           │
+                      └─────────────────────────────────────────────┘
 ```
 
----
+| Service | Role | Why this choice |
+| --- | --- | --- |
+| nginx (Alpine) | Static frontend + API reverse proxy | Eliminates CORS in production; efficient static serving |
+| Node.js / Express | REST API, CRUD, stats, JWT auth | Non-blocking I/O suits a data-heavy API |
+| MySQL 8.0 | Relational store | Survey data maps naturally to tables with foreign-key integrity |
+| Flask (Python) | Trend scoring, pattern detection, comparison | Python's data ecosystem fits the analytical work |
+| PHP 8.2 / Apache | Admin panel | PDO parameterised queries for safe data management |
 
-## Data Sources
+Design decisions:
+- Analytical work runs as its own Flask service rather than inside Node — keeps the API thin and lets the analysis scale or be replaced independently.
+- Reverse proxy chosen over CORS configuration — production-realistic and removes a class of client-side failure.
+- Docker Compose runs all five services with one command — reproducible environments.
 
-| Survey | Publisher | Respondents | Used For |
-|---|---|---|---|
-| **Stack Overflow Annual Developer Survey** | Stack Overflow | ~90,000/year | Broad technology adoption |
-| **State of JS Survey** | Sacha Greif et al. | ~30,000/year | JavaScript ecosystem |
-| **JetBrains Developer Ecosystem Survey** | JetBrains | ~26,000/year | DevOps, backend, tooling |
+## Results
 
----
+**Public API**
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/categories` | 15 technical categories |
+| GET | `/api/tools` | Active tools |
+| GET | `/api/industries` | 10 industry filters |
+| GET | `/api/stats/top` | Top tools in a category; optional `?industry=` |
+| GET | `/api/stats/usage` | Historical usage % for a tool (Chart.js data) |
+| GET | `/api/stack-builder` | Recommended stack for an industry + product type |
+| GET | `/api/trends` | Trend scores from the intelligence engine |
+| GET | `/feed.xml` | Full data export as XML |
+
+**Intelligence engine (Flask)**
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/intelligence/trends` | Trend scores with direction (rising/stable/falling) |
+| GET | `/intelligence/rising` | Strongest upward trends |
+| GET | `/intelligence/patterns` | Cross-category adoption patterns |
+| GET | `/intelligence/compare` | Side-by-side tool comparison |
+
+**Admin (JWT required)**
+
+| Method | Path | Action |
+| --- | --- | --- |
+| POST | `/api/auth/login` | Authenticate, receive JWT |
+| POST | `/api/stats` | Insert a usage stat row |
 
 ## Screenshots
 
-| Dashboard | Category Detail |
-|-----------|-----------------|
+| Dashboard | Category detail |
+| --- | --- |
 | ![Dashboard](screenshots/dashboard.png) | ![Category](screenshots/category.png) |
 
-| Stack Builder | Admin Panel |
-|---------------|-------------|
+| Stack builder | Admin panel |
+| --- | --- |
 | ![Stack Builder](screenshots/stack-builder.png) | ![Admin](screenshots/admin.png) |
 
-| Dark Mode | Light Mode |
-|-----------|------------|
+| Dark mode | Light mode |
+| --- | --- |
 | ![Dark Mode](screenshots/dark-mode.png) | ![Light Mode](screenshots/light-mode.png) |
 
----
+## Reproduce
 
-## Academic Context
+```bash
+git clone https://github.com/ayadilara10/techboard.git
+cd techboard
+cp .env.example .env        # fill DB_ROOT_PASSWORD, DB_USER, DB_PASSWORD, JWT_SECRET, ADMIN_SECRET
+docker compose up --build
+docker compose ps           # all five containers show Up / healthy
+```
+Expected output: dashboard at `http://localhost`, admin at `:8080`, API at `:3000`, Flask health at `:5001/intelligence/health`. First build takes 2–4 minutes.
 
-This project was built for the **Web Technologies course (Tehnologii WEB), 2nd Year, Informatics, Titu Maiorescu University, Bucharest**. The course requires demonstrating proficiency across the full web stack — from database design to server-side scripting to frontend interaction.
+## Roadmap
 
-Every technology below was a course requirement. The architecture was designed so each one plays a real, non-trivial role rather than being bolted on just to tick a box.
+Each item is a state to reach, with the measure that confirms it.
 
-| Course Requirement | Where It Appears in This Project |
-|---|---|
-| **HTML5** | `frontend/*.html` — semantic elements (`nav`, `main`, `section`), data attributes, SVG |
-| **CSS3** | `frontend/css/` — custom properties, Flexbox, Grid, transitions, dark/light mode |
-| **JavaScript** | `frontend/js/` — ES6+, async/await, fetch API, DOM manipulation |
-| **jQuery** | `frontend/js/dashboard.js`, `category.js` — AJAX calls, dynamic DOM updates |
-| **Node.js** | `backend/` — Express REST API, MySQL connection pool, JWT authentication |
-| **PHP** | `admin/` — session-based auth, PDO MySQL, CSV file upload and processing |
-| **MySQL** | `database/` — 8-table relational schema, foreign keys, correlated subqueries |
-| **XML** | `backend/routes/xml.js` — `/feed.xml` data export; admin import pipeline |
-| **Flask (Python)** | `intelligence/` — Python microservice for trend analysis and statistical comparison |
+**Now — Reachable and trustworthy.** The product is usable by someone other than its author, and they trust the numbers.
+- Public deployment: VPS with nginx reverse proxy and SSL.
+- Visible data-freshness signal ("data as of …") so a static seed is not mistaken for stale data.
+- Confirmed by: a first external user completing one lookup without questioning the data's age.
 
----
+**Next — Users return.** There is a reason to come back beyond a single visit.
+- Candidate solutions, to validate before building: saved stacks and bookmarked comparisons behind accounts, or a lighter-weight periodic digest.
+- Confirmed by: week-4 return rate.
 
-## Future Roadmap
+**Later — Decision tool, then revenue.** The product moves from browsing to deciding, and monetizes only once value is proven.
+- Adoption forecasting: extend from past trends to projected direction.
+- Enterprise tier: industry breakdowns as a paid capability.
+- Gate: monetization follows validated return rate and willingness-to-pay — not before.
 
-- Live data scraping pipeline from Stack Overflow and GitHub APIs
-- User accounts with saved stacks and bookmarked comparisons
-- VPS deployment with nginx reverse proxy and SSL
-- Premium tier for enterprise industry breakdowns
-- Adoption forecasting and trend prediction
+## Structure
+
+```
+techboard/
+├── docker-compose.yml     orchestrates all five services
+├── .env.example           required secrets template
+├── database/              8-table schema + seed files
+├── backend/               Node.js/Express API — routes, middleware, JWT
+├── frontend/              static dashboard (nginx) — HTML/CSS/JS, Chart.js
+├── admin/                 PHP 8.2 admin panel — PDO, CSV import
+├── intelligence/          Flask analytics service — trends, patterns, compare
+└── screenshots/
+```
+
+## Conventions
+
+- Comments: intent-comments on non-obvious SQL blocks and service-boundary calls (why, not what).
+- JavaScript: JSDoc on exported route handlers and utilities (`@param` / `@returns`).
+- Python (Flask): Google-style docstrings (Args / Returns / Raises) on analysis functions.
+- PHP: PHPDoc on admin controllers.
+- Configuration: all secrets via `.env`; never commit a real `.env`.
+- Data interchange: XML for the export and import feed.
